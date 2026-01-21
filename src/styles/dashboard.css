@@ -1,0 +1,209 @@
+.life-spheres-page {
+    padding: 5rem 1.5rem 2rem;
+    position: relative;
+}
+
+.background-pixels {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.pixel {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 0;
+    opacity: 0.9;
+    animation: pixel-fall 9s linear infinite;
+    image-rendering: pixelated;
+}
+
+.pixel-variant-1 { top: -30px; left: 10%; background: #34c759; animation-delay: 0s; }
+.pixel-variant-2 { top: -34px; left: 28%; background: #0ea5e9; animation-delay: 1.4s; }
+.pixel-variant-3 { top: -26px; left: 46%; background: #f97316; animation-delay: 2.8s; }
+.pixel-variant-4 { top: -32px; left: 64%; background: #a855f7; animation-delay: 4.2s; }
+.pixel-variant-5 { top: -38px; left: 82%; background: #facc15; animation-delay: 5.6s; }
+.pixel-variant-6 { top: -40px; left: 54%; background: #22c55e; animation-delay: 7s; }
+
+@keyframes pixel-fall {
+    0% { transform: translateY(-10vh); opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: translateY(110vh); opacity: 0; }
+}
+
+.life-spheres-container {
+    max-width: 1400px; 
+    margin: 0 auto; 
+    min-height: 110vh;
+    display: flex; 
+    flex-direction: column; 
+    gap: 4rem;
+    position: relative; 
+    z-index: 1;
+}
+
+
+.spheres-content { flex: 1; }
+.spheres-grid {
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 3.5rem 2rem; 
+    max-width: 100%;
+}
+
+
+.sphere-card {
+    position: relative; 
+    height: 200px;
+    background: rgba(15, 23, 42, 0.85); 
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 2.4rem; 
+    padding: 2.5rem 2rem 1.2rem;
+    cursor: pointer; 
+    overflow: hidden; 
+    display: flex; 
+    flex-direction: column;
+    backdrop-filter: blur(28px);
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    will-change: transform, box-shadow;
+}
+
+.sphere-card::after {
+    content: ""; 
+    position: absolute; 
+    bottom: 0; 
+    left: 0; 
+    right: 0;
+    height: 4px; 
+    background: linear-gradient(90deg, var(--sphere-accent), transparent);
+    transform: scaleX(0); 
+    transform-origin: left;
+    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.sphere-glow {
+    position: absolute; 
+    inset: 0;
+    background: radial-gradient(circle at 20% 20%, var(--sphere-accent) 0%, transparent 70%);
+    opacity: 0; 
+    border-radius: inherit; 
+    transition: opacity 0.5s ease;
+}
+
+
+.sphere-card:hover, .sphere-card.priority-selected {
+    transform: translateY(-16px) scale(1.03);
+    background: rgba(15, 23, 42, 0.98);
+    border-color: rgba(139, 92, 246, 0.6);
+    box-shadow:
+        0 40px 80px rgba(0, 0, 0, 0.5),
+        0 0 0 1px var(--sphere-accent),
+        inset 0 1px 0 rgba(255, 255, 0.1);
+}
+
+.sphere-card:hover::after, .sphere-card.priority-selected::after { 
+    transform: scaleX(1); 
+}
+.sphere-card:hover .sphere-glow, .sphere-card.priority-selected .sphere-glow { 
+    opacity: 0.08; 
+}
+
+.sphere-icon {
+    font-size: 3rem; 
+    margin-bottom: 1.2rem;
+    filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.4));
+    transition: transform 0.3s ease;
+}
+
+.sphere-card:hover .sphere-icon, .sphere-card.priority-selected .sphere-icon {
+    transform: scale(1.1) translateY(-4px);
+}
+
+.sphere-title {
+    font-size: 1.35rem; 
+    font-weight: 800; 
+    margin: 0 0 0.6rem 0;
+    color: #f9fafb; 
+    line-height: 1.25; 
+    letter-spacing: -0.02em;
+}
+
+.sphere-subtitle {
+    font-size: 0.92rem; 
+    color: #cbd5e1; 
+    margin: 0 0 1.5rem 0;
+    line-height: 1.45; 
+    flex: 1; 
+    font-weight: 500;
+}
+
+/* ПРОГРЕСС БАР */
+.sphere-progress-container {
+    display: flex; 
+    align-items: center; 
+    gap: 0.8rem;
+    margin-top: auto; 
+    padding-top: 1rem;
+    border-top: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.sphere-progress-bar {
+    flex: 1; 
+    height: 8px; 
+    background: rgba(148, 163, 184, 0.2);
+    border-radius: 999px; 
+    overflow: hidden;
+}
+
+.sphere-progress-fill {
+    height: 100%; 
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--sphere-accent),
+    color-mix(in srgb, var(--sphere-accent) 70%, transparent));
+    width: var(--progress-width, 0%);
+    transition: width 2s cubic-bezier(0.23, 1, 0.32, 1);
+    box-shadow: 0 0 16px var(--sphere-accent);
+}
+
+.sphere-progress-text {
+    font-size: 0.88rem; 
+    font-weight: 700; 
+    color: var(--sphere-accent);
+    min-width: 3rem; 
+    text-align: right;
+}
+
+.sphere-arrow {
+    position: absolute; 
+    top: 2rem; 
+    right: 2rem;
+    font-size: 1.4rem; 
+    font-weight: 800; 
+    color: var(--sphere-accent);
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.sphere-card:hover .sphere-arrow, .sphere-card.priority-selected .sphere-arrow {
+    transform: translateX(12px) rotate(20deg);
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+
+@media (min-width: 1400px) { 
+    .spheres-grid { grid-template-columns: repeat(4, 1fr); } 
+}
+@media (max-width: 1100px) {
+    .spheres-grid { grid-template-columns: repeat(3, 1fr); gap: 2.5rem 1.5rem; }
+}
+@media (max-width: 768px) {
+    .spheres-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem 1.5rem; }
+    .sphere-card { height: 260px; padding: 2rem 1.5rem 1rem; }
+}
+@media (max-width: 480px) {
+    .spheres-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .life-spheres-page { padding: 3rem 1rem 2rem; }
+    .sphere-card { height: 250px; }
+}

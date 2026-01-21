@@ -1,0 +1,195 @@
+.app-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    padding: 2rem;
+}
+
+.areas-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.areas-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.areas-header h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 1rem;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.areas-header p {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.areas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.area-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    height: 240px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+}
+
+.area-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--area-color);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.area-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+.area-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+}
+
+.area-description {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.area-arrow {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    font-size: 1.5rem;
+    color: var(--area-color);
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.area-card:hover .area-arrow {
+    opacity: 1;
+    transform: translateX(10px) rotate(18deg);
+}
+
+
+.background-pixels {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.pixel {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: fall 10s linear infinite;
+}
+
+.pixel-variant-1 {
+    background: rgba(59, 130, 246, 0.3);
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.pixel-variant-2 {
+    background: rgba(139, 92, 246, 0.3);
+    left: 25%;
+    animation-delay: 2s;
+}
+
+.pixel-variant-3 {
+    background: rgba(236, 72, 153, 0.3);
+    left: 40%;
+    animation-delay: 4s;
+}
+
+.pixel-variant-4 {
+    background: rgba(245, 158, 11, 0.3);
+    left: 60%;
+    animation-delay: 6s;
+}
+
+.pixel-variant-5 {
+    background: rgba(16, 185, 129, 0.3);
+    left: 75%;
+    animation-delay: 8s;
+}
+
+.pixel-variant-6 {
+    background: rgba(239, 68, 68, 0.3);
+    left: 90%;
+    animation-delay: 1s;
+}
+
+@keyframes fall {
+    0% {
+        transform: translateY(-100px);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .app-page {
+        padding: 1rem;
+    }
+    
+    .areas-header h1 {
+        font-size: 2rem;
+    }
+    
+    .areas-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .area-card {
+        height: 180px;
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .area-card {
+        height: 200px;
+    }
+}

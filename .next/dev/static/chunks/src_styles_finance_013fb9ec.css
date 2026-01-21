@@ -1,0 +1,565 @@
+/* [project]/src/styles/finance.css [app-client] (css) */
+.sphere-page {
+  background: linear-gradient(#0f172a 0%, #000 100%);
+  min-height: 100vh;
+  padding: 2rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.bg-aurora {
+  z-index: 0;
+  background: radial-gradient(circle at 20% 10%, #8b5cf633 0%, #0000 50%), radial-gradient(circle at 80% 80%, #8b5cf61a 0%, #0000 50%);
+  animation: 10s ease-in-out infinite alternate aurora;
+  position: fixed;
+  inset: 0;
+}
+
+@keyframes aurora {
+  0% {
+    opacity: .5;
+  }
+
+  100% {
+    opacity: .8;
+  }
+}
+
+.header-simple {
+  z-index: 2;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  display: flex;
+  position: relative;
+}
+
+.back-btn {
+  color: #fff;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  background: #ffffff1a;
+  border: 1px solid #fff3;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 1.2rem;
+  transition: all .3s;
+}
+
+.back-btn:hover {
+  background: #8b5cf64d;
+  transform: scale(1.1);
+  box-shadow: 0 8px 24px #8b5cf666;
+}
+
+.hero-compact {
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  background: #ffffff14;
+  border: 1px solid #ffffff1a;
+  border-radius: 2rem;
+  flex: 1;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  display: flex;
+}
+
+.hero-icon {
+  filter: drop-shadow(0 4px 12px #8b5cf666);
+  font-size: 2.5rem;
+}
+
+.hero-compact h1 {
+  background: linear-gradient(135deg, #8b5cf6, #fff);
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.main-content {
+  z-index: 2;
+  flex-direction: column;
+  flex: 1;
+  gap: 4rem;
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  position: relative;
+}
+
+.tasks-container {
+  scrollbar-width: thin;
+  scrollbar-color: #8b5cf64d transparent;
+  flex-direction: column;
+  flex: 1;
+  gap: .75rem;
+  max-height: 70vh;
+  display: flex;
+  overflow: hidden;
+}
+
+.tasks-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tasks-container::-webkit-scrollbar-track {
+  background: #ffffff0d;
+  border-radius: 3px;
+}
+
+.tasks-container::-webkit-scrollbar-thumb {
+  background: #8b5cf666;
+  border-radius: 3px;
+  transition: background .2s;
+}
+
+.tasks-container::-webkit-scrollbar-thumb:hover {
+  background: #8b5cf699;
+}
+
+.tasks-scrollable {
+  scrollbar-width: thin;
+  scrollbar-color: #8b5cf64d transparent;
+  flex: 1;
+  padding-right: .25rem;
+  overflow-y: auto;
+}
+
+.tasks-scrollable::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tasks-scrollable::-webkit-scrollbar-track {
+  background: #ffffff05;
+  border-radius: 3px;
+  margin: .5rem 0;
+}
+
+.tasks-scrollable::-webkit-scrollbar-thumb {
+  background: #8b5cf666;
+  border-radius: 3px;
+  transition: all .2s;
+}
+
+.tasks-scrollable::-webkit-scrollbar-thumb:hover {
+  background: #8b5cf699;
+  transform: scale(1.1);
+}
+
+.empty-state {
+  color: #94a3b8;
+  text-align: center;
+  justify-content: center;
+  align-items: end;
+  height: 200px;
+  padding-bottom: 2rem;
+  font-size: 1.1rem;
+  display: flex;
+}
+
+.tasks-list {
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.task-item {
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  cursor: move;
+  background: #ffffff0d;
+  border: 1px solid #ffffff1a;
+  border-radius: 1.5rem;
+  flex-shrink: 0;
+  margin-bottom: .75rem;
+  padding: 1.25rem;
+  transition: all .3s;
+}
+
+.task-item:hover {
+  background: #ffffff1a;
+  border-color: #8b5cf64d;
+  transform: translateY(-1px);
+}
+
+.task-main {
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  display: flex;
+}
+
+.task-checkbox {
+  cursor: pointer;
+  flex: 1;
+  align-items: center;
+  gap: .75rem;
+  display: flex;
+}
+
+.task-checkbox input {
+  display: none;
+}
+
+.custom-checkbox {
+  border: 2px solid #8b5cf680;
+  border-radius: 50%;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  transition: all .3s;
+  position: relative;
+}
+
+.custom-checkbox:after {
+  content: "";
+  background: #8b5cf6cc;
+  border-radius: 50%;
+  transition: transform .3s;
+  position: absolute;
+  inset: 0;
+  transform: scale(0);
+}
+
+input:checked + .custom-checkbox:after {
+  transform: scale(1);
+}
+
+input:checked + .custom-checkbox {
+  background: #8b5cf64d;
+  border-color: #8b5cf6;
+}
+
+.task-text {
+  color: #f9fafb;
+  font-size: 1rem;
+  transition: all .3s;
+}
+
+.task-text.done {
+  opacity: .6;
+  text-decoration: line-through;
+}
+
+.task-actions {
+  justify-content: flex-end;
+  align-items: center;
+  gap: .5rem;
+  min-width: 80px;
+  display: flex;
+}
+
+.subtasks-toggle {
+  color: #8b5cf6;
+  cursor: pointer;
+  background: #ffffff1a;
+  border: 1px solid #8b5cf680;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 1.2rem;
+  transition: all .3s;
+}
+
+.subtasks-toggle:hover {
+  background: #8b5cf633;
+  transform: scale(1.1);
+}
+
+.delete-btn {
+  color: #ff6b6b;
+  cursor: pointer;
+  background: #ffffff1a;
+  border: 1px solid #ff00004d;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 1.2rem;
+  transition: all .3s;
+}
+
+.delete-btn:hover {
+  background: #f003;
+  transform: scale(1.1);
+}
+
+.subtasks-content {
+  max-height: 0;
+  margin-top: 0;
+  transition: max-height .3s cubic-bezier(.4, 0, .2, 1), margin .2s;
+  overflow: hidden;
+}
+
+.subtasks-content.expanded {
+  max-height: 280px;
+  margin-top: .75rem;
+}
+
+.subtasks-list {
+  margin: 0;
+  padding: .5rem 0 .25rem 1.25rem;
+  list-style: none;
+}
+
+.subtask-item {
+  opacity: 0;
+  align-items: center;
+  gap: .75rem;
+  padding: .375rem 0;
+  animation: .2s forwards fadeIn;
+  display: flex;
+}
+
+.subtask-item:first-child {
+  animation-delay: 50ms;
+}
+
+.subtask-item:nth-child(2) {
+  animation-delay: .1s;
+}
+
+.subtask-item:nth-child(3) {
+  animation-delay: .15s;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.subtask-checkbox {
+  cursor: pointer;
+  flex: 1;
+  align-items: center;
+  gap: .5rem;
+  display: flex;
+}
+
+.subtask-checkbox input {
+  display: none;
+}
+
+.custom-subcheckbox {
+  border: 2px solid #8b5cf666;
+  border-radius: 3px;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  transition: all .2s;
+  position: relative;
+}
+
+.custom-subcheckbox:after {
+  content: "";
+  background: #8b5cf6;
+  transition: all .2s;
+  position: absolute;
+  inset: 2px;
+  transform: scale(0);
+}
+
+input:checked + .custom-subcheckbox:after {
+  transform: scale(1);
+}
+
+input:checked + .custom-subcheckbox {
+  background: #8b5cf64d;
+  border-color: #8b5cf6;
+}
+
+.subtask-text {
+  color: #f9fafb;
+  font-size: .875rem;
+  line-height: 1.3;
+}
+
+.subtask-text.done {
+  opacity: .6;
+  text-decoration: line-through;
+}
+
+.delete-sub-btn {
+  color: #ff6b6b;
+  cursor: pointer;
+  opacity: .7;
+  background: #ff000026;
+  border: none;
+  border-radius: 50%;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  font-size: .875rem;
+  transition: all .2s;
+}
+
+.delete-sub-btn:hover {
+  opacity: 1;
+  background: #ff00004d;
+  transform: scale(1.05);
+}
+
+.add-subtask-section {
+  opacity: 0;
+  gap: .5rem;
+  padding-top: .5rem;
+  transition: all .2s;
+  display: flex;
+  transform: translateY(4px);
+}
+
+.subtasks-content.expanded .add-subtask-section {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.subtask-input {
+  color: #f9fafb;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  background: #ffffff0f;
+  border: 1px solid #8b5cf633;
+  border-radius: .75rem;
+  flex: 1;
+  padding: .4375rem .75rem;
+  font-size: .8125rem;
+  transition: all .2s;
+}
+
+.subtask-input::placeholder {
+  color: #94a3b8;
+}
+
+.subtask-input:focus {
+  border-color: #8b5cf680;
+  outline: none;
+  box-shadow: 0 0 0 2px #8b5cf61a;
+}
+
+.add-sub-btn {
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+  opacity: .9;
+  background: #8b5cf6b3;
+  border: none;
+  border-radius: .75rem;
+  padding: .4375rem 1rem;
+  font-size: .8125rem;
+  font-weight: 600;
+  transition: all .2s;
+}
+
+.add-sub-btn:hover {
+  opacity: 1;
+  background: #8b5cf6;
+  transform: translateY(-1px);
+}
+
+.add-task-section {
+  border-top: 1px solid #ffffff1a;
+  flex-shrink: 0;
+  gap: 1rem;
+  padding-top: 1rem;
+  display: flex;
+}
+
+.task-input {
+  color: #f9fafb;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  background: #ffffff14;
+  border: 1px solid #fff3;
+  border-radius: 2rem;
+  flex: 1;
+  padding: 1.25rem 1.5rem;
+  font-size: 1rem;
+  transition: all .3s;
+}
+
+.task-input::placeholder {
+  color: #94a3b8;
+}
+
+.task-input:focus {
+  border-color: #8b5cf6;
+  outline: none;
+  box-shadow: 0 0 0 3px #8b5cf633;
+}
+
+.add-btn {
+  color: #fff;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  white-space: nowrap;
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  border: none;
+  border-radius: 2rem;
+  padding: 1.25rem 2rem;
+  font-size: 1rem;
+  font-weight: 700;
+  transition: all .3s cubic-bezier(.23, 1, .32, 1);
+}
+
+.add-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px #8b5cf680;
+}
+
+@media (min-width: 769px) {
+  .main-content {
+    max-width: 800px;
+  }
+
+  .task-item {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .sphere-page {
+    padding: 1.5rem 1rem;
+  }
+
+  .header-simple {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .hero-compact {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .add-task-section, .add-subtask-section {
+    flex-direction: column;
+  }
+
+  .main-content {
+    gap: 3rem;
+    max-width: 100%;
+  }
+
+  .empty-state {
+    height: 250px;
+  }
+
+  .tasks-container {
+    max-height: 60vh;
+  }
+
+  .tasks-scrollable::-webkit-scrollbar {
+    width: 4px;
+  }
+}
+
+/*# sourceMappingURL=src_styles_finance_013fb9ec.css.map*/

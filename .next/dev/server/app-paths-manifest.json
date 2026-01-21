@@ -1,0 +1,17 @@
+{
+  "/areas/1/page": "app/areas/1/page.js",
+  "/areas/2/page": "app/areas/2/page.js",
+  "/areas/3/page": "app/areas/3/page.js",
+  "/areas/4/page": "app/areas/4/page.js",
+  "/areas/5/page": "app/areas/5/page.js",
+  "/areas/6/page": "app/areas/6/page.js",
+  "/areas/7/page": "app/areas/7/page.js",
+  "/areas/8/page": "app/areas/8/page.js",
+  "/contact/page": "app/contact/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/help/page": "app/help/page.js",
+  "/login/page": "app/login/page.js",
+  "/page": "app/page.js",
+  "/profile/page": "app/profile/page.js",
+  "/register/page": "app/register/page.js"
+}

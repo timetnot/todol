@@ -1,0 +1,280 @@
+/* [project]/src/styles/dashboard.css [app-client] (css) */
+.life-spheres-page {
+  padding: 5rem 1.5rem 2rem;
+  position: relative;
+}
+
+.background-pixels {
+  pointer-events: none;
+  z-index: 0;
+  position: fixed;
+  inset: 0;
+}
+
+.pixel {
+  opacity: .9;
+  width: 10px;
+  height: 10px;
+  image-rendering: pixelated;
+  border-radius: 0;
+  animation: 9s linear infinite pixel-fall;
+  position: absolute;
+}
+
+.pixel-variant-1 {
+  background: #34c759;
+  animation-delay: 0s;
+  top: -30px;
+  left: 10%;
+}
+
+.pixel-variant-2 {
+  background: #0ea5e9;
+  animation-delay: 1.4s;
+  top: -34px;
+  left: 28%;
+}
+
+.pixel-variant-3 {
+  background: #f97316;
+  animation-delay: 2.8s;
+  top: -26px;
+  left: 46%;
+}
+
+.pixel-variant-4 {
+  background: #a855f7;
+  animation-delay: 4.2s;
+  top: -32px;
+  left: 64%;
+}
+
+.pixel-variant-5 {
+  background: #facc15;
+  animation-delay: 5.6s;
+  top: -38px;
+  left: 82%;
+}
+
+.pixel-variant-6 {
+  background: #22c55e;
+  animation-delay: 7s;
+  top: -40px;
+  left: 54%;
+}
+
+@keyframes pixel-fall {
+  0% {
+    opacity: 0;
+    transform: translateY(-10vh);
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(110vh);
+  }
+}
+
+.life-spheres-container {
+  z-index: 1;
+  flex-direction: column;
+  gap: 4rem;
+  max-width: 1400px;
+  min-height: 110vh;
+  margin: 0 auto;
+  display: flex;
+  position: relative;
+}
+
+.spheres-content {
+  flex: 1;
+}
+
+.spheres-grid {
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 3.5rem 2rem;
+  max-width: 100%;
+  display: grid;
+}
+
+.sphere-card {
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(28px);
+  backdrop-filter: blur(28px);
+  will-change: transform, box-shadow;
+  background: #0f172ad9;
+  border: 1px solid #94a3b833;
+  border-radius: 2.4rem;
+  flex-direction: column;
+  height: 200px;
+  padding: 2.5rem 2rem 1.2rem;
+  transition: all .5s cubic-bezier(.23, 1, .32, 1);
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.sphere-card:after {
+  content: "";
+  background: linear-gradient(90deg, var(--sphere-accent), transparent);
+  transform-origin: 0;
+  height: 4px;
+  transition: transform .5s cubic-bezier(.23, 1, .32, 1);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transform: scaleX(0);
+}
+
+.sphere-glow {
+  background: radial-gradient(circle at 20% 20%, var(--sphere-accent) 0%, transparent 70%);
+  opacity: 0;
+  border-radius: inherit;
+  transition: opacity .5s;
+  position: absolute;
+  inset: 0;
+}
+
+.sphere-card:hover, .sphere-card.priority-selected {
+  box-shadow: 0 40px 80px #00000080, 0 0 0 1px var(--sphere-accent), inset 0 1px 0 #ff0;
+  background: #0f172afa;
+  border-color: #8b5cf699;
+  transform: translateY(-16px)scale(1.03);
+}
+
+.sphere-card:hover:after, .sphere-card.priority-selected:after {
+  transform: scaleX(1);
+}
+
+.sphere-card:hover .sphere-glow, .sphere-card.priority-selected .sphere-glow {
+  opacity: .08;
+}
+
+.sphere-icon {
+  filter: drop-shadow(0 12px 24px #0006);
+  margin-bottom: 1.2rem;
+  font-size: 3rem;
+  transition: transform .3s;
+}
+
+.sphere-card:hover .sphere-icon, .sphere-card.priority-selected .sphere-icon {
+  transform: scale(1.1)translateY(-4px);
+}
+
+.sphere-title {
+  color: #f9fafb;
+  letter-spacing: -.02em;
+  margin: 0 0 .6rem;
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.sphere-subtitle {
+  color: #cbd5e1;
+  flex: 1;
+  margin: 0 0 1.5rem;
+  font-size: .92rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.sphere-progress-container {
+  border-top: 1px solid #94a3b826;
+  align-items: center;
+  gap: .8rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  display: flex;
+}
+
+.sphere-progress-bar {
+  background: #94a3b833;
+  border-radius: 999px;
+  flex: 1;
+  height: 8px;
+  overflow: hidden;
+}
+
+.sphere-progress-fill {
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--sphere-accent), color-mix(in srgb, var(--sphere-accent) 70%, transparent));
+  height: 100%;
+  width: var(--progress-width, 0%);
+  box-shadow: 0 0 16px var(--sphere-accent);
+  transition: width 2s cubic-bezier(.23, 1, .32, 1);
+}
+
+.sphere-progress-text {
+  color: var(--sphere-accent);
+  text-align: right;
+  min-width: 3rem;
+  font-size: .88rem;
+  font-weight: 700;
+}
+
+.sphere-arrow {
+  color: var(--sphere-accent);
+  font-size: 1.4rem;
+  font-weight: 800;
+  transition: all .4s cubic-bezier(.23, 1, .32, 1);
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+}
+
+.sphere-card:hover .sphere-arrow, .sphere-card.priority-selected .sphere-arrow {
+  text-shadow: 0 4px 12px #00000080;
+  transform: translateX(12px)rotate(20deg);
+}
+
+@media (min-width: 1400px) {
+  .spheres-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1100px) {
+  .spheres-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .spheres-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem 1.5rem;
+  }
+
+  .sphere-card {
+    height: 260px;
+    padding: 2rem 1.5rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .spheres-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .life-spheres-page {
+    padding: 3rem 1rem 2rem;
+  }
+
+  .sphere-card {
+    height: 250px;
+  }
+}
+
+/*# sourceMappingURL=src_styles_dashboard_5624fd2d.css.map*/
