@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ApiStatus } from "@/components/ApiStatus";
 
 export default function Home() {
     const [xp, setXp] = useState(0);
@@ -17,6 +18,7 @@ export default function Home() {
 
     return (
         <div className="app-page">
+            <ApiStatus />
             <div className="background-pixels">
                 {Array.from({ length: 500 }).map((_, i) => (
                     <div key={i} className={`pixel pixel-variant-${(i % 6) + 1}`} />

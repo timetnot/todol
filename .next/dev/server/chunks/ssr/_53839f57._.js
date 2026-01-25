@@ -73,42 +73,10 @@ const lifeSpheres = [
         subtitle: "Восстановление сил"
     }
 ];
-const getTasksForSphere = (sphereId)=>{
-    if ("TURBOPACK compile-time truthy", 1) return [];
-    //TURBOPACK unreachable
-    ;
-    const tasks = undefined;
-};
-const getTaskStats = (sphereId)=>{
-    const tasks = getTasksForSphere(sphereId);
-    let completedTasks = 0;
-    let totalTasks = 0;
-    tasks.forEach((task)=>{
-        totalTasks++;
-        // Если есть подзадачи, считаем их
-        if (task.subtasks && task.subtasks.length > 0) {
-            const completedSubtasks = task.subtasks.filter((st)=>st.completed).length;
-            if (completedSubtasks === task.subtasks.length) {
-                completedTasks++;
-            }
-        } else {
-            // Если нет подзадач, считаем саму задачу
-            if (task.completed) {
-                completedTasks++;
-            }
-        }
-    });
-    return {
-        completedTasks,
-        totalTasks
-    };
-};
-// Генерируем детерминированные пиксели, летающие вразброс
 const generatePixels = ()=>{
     return Array.from({
         length: 80
     }, (_, i)=>{
-        // Создаем разные направления движения
         const directions = [
             {
                 xMove: 2,
@@ -189,18 +157,40 @@ function Dashboard() {
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
         setIsClient(true);
         // Загружаем статистику для всех сфер
-        const stats = {};
-        lifeSpheres.forEach((sphere)=>{
-            stats[sphere.id] = getTaskStats(sphere.id);
-        });
-        setSphereStats(stats);
-        // Обновляем статистику при изменении localStorage
+        const loadAllStats = async ()=>{
+            const stats = {};
+            for (const sphere of lifeSpheres){
+                try {
+                    // Используем API для получения статистики
+                    const response = await fetch(`http://127.0.0.1:8002/api/todos`);
+                    if (response.ok) {
+                        const todos = await response.json();
+                        const completedTasks = todos.filter((todo)=>todo.completed).length;
+                        const totalTasks = todos.length;
+                        stats[sphere.id] = {
+                            completedTasks,
+                            totalTasks
+                        };
+                    } else {
+                        stats[sphere.id] = {
+                            completedTasks: 0,
+                            totalTasks: 0
+                        };
+                    }
+                } catch (error) {
+                    console.error(`Failed to load stats for sphere ${sphere.id}:`, error);
+                    stats[sphere.id] = {
+                        completedTasks: 0,
+                        totalTasks: 0
+                    };
+                }
+            }
+            setSphereStats(stats);
+        };
+        loadAllStats();
+        // Слушатели для обновления статистики
         const handleStorageChange = ()=>{
-            const newStats = {};
-            lifeSpheres.forEach((sphere)=>{
-                newStats[sphere.id] = getTaskStats(sphere.id);
-            });
-            setSphereStats(newStats);
+            loadAllStats();
         };
         window.addEventListener('storage', handleStorageChange);
         window.addEventListener('taskUpdated', handleStorageChange);
@@ -222,7 +212,7 @@ function Dashboard() {
         },
         className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
             [
-                "3bed9ab3fb213ed4",
+                "bea3d77f70a76dd1",
                 [
                     pixels.map((pixel)=>`
                     @keyframes pixel-scatter-${pixel.id} {
@@ -255,7 +245,7 @@ function Dashboard() {
                 },
                 className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                     [
-                        "3bed9ab3fb213ed4",
+                        "bea3d77f70a76dd1",
                         [
                             pixels.map((pixel)=>`
                     @keyframes pixel-scatter-${pixel.id} {
@@ -295,7 +285,7 @@ function Dashboard() {
                         },
                         className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                             [
-                                "3bed9ab3fb213ed4",
+                                "bea3d77f70a76dd1",
                                 [
                                     pixels.map((pixel)=>`
                     @keyframes pixel-scatter-${pixel.id} {
@@ -320,12 +310,12 @@ function Dashboard() {
                         ]) + " " + "pixel"
                     }, pixel1.id, false, {
                         fileName: "[project]/src/app/dashboard/page.tsx",
-                        lineNumber: 160,
+                        lineNumber: 120,
                         columnNumber: 21
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/src/app/dashboard/page.tsx",
-                lineNumber: 153,
+                lineNumber: 113,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -337,7 +327,7 @@ function Dashboard() {
                 },
                 className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                     [
-                        "3bed9ab3fb213ed4",
+                        "bea3d77f70a76dd1",
                         [
                             pixels.map((pixel)=>`
                     @keyframes pixel-scatter-${pixel.id} {
@@ -375,7 +365,7 @@ function Dashboard() {
                         },
                         className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                             [
-                                "3bed9ab3fb213ed4",
+                                "bea3d77f70a76dd1",
                                 [
                                     pixels.map((pixel)=>`
                     @keyframes pixel-scatter-${pixel.id} {
@@ -401,7 +391,7 @@ function Dashboard() {
                         children: "Сферы жизни"
                     }, void 0, false, {
                         fileName: "[project]/src/app/dashboard/page.tsx",
-                        lineNumber: 188,
+                        lineNumber: 148,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -414,7 +404,7 @@ function Dashboard() {
                         },
                         className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                             [
-                                "3bed9ab3fb213ed4",
+                                "bea3d77f70a76dd1",
                                 [
                                     pixels.map((pixel)=>`
                     @keyframes pixel-scatter-${pixel.id} {
@@ -440,13 +430,13 @@ function Dashboard() {
                         children: "Выберите сферу для развития и прокачайте свою жизнь"
                     }, void 0, false, {
                         fileName: "[project]/src/app/dashboard/page.tsx",
-                        lineNumber: 201,
+                        lineNumber: 161,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/dashboard/page.tsx",
-                lineNumber: 182,
+                lineNumber: 142,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -458,7 +448,7 @@ function Dashboard() {
                 },
                 className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                     [
-                        "3bed9ab3fb213ed4",
+                        "bea3d77f70a76dd1",
                         [
                             pixels.map((pixel)=>`
                     @keyframes pixel-scatter-${pixel.id} {
@@ -490,7 +480,7 @@ function Dashboard() {
                     },
                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                         [
-                            "3bed9ab3fb213ed4",
+                            "bea3d77f70a76dd1",
                             [
                                 pixels.map((pixel)=>`
                     @keyframes pixel-scatter-${pixel.id} {
@@ -544,7 +534,7 @@ function Dashboard() {
                             },
                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                 [
-                                    "3bed9ab3fb213ed4",
+                                    "bea3d77f70a76dd1",
                                     [
                                         pixels.map((pixel)=>`
                     @keyframes pixel-scatter-${pixel.id} {
@@ -577,7 +567,7 @@ function Dashboard() {
                                     },
                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                         [
-                                            "3bed9ab3fb213ed4",
+                                            "bea3d77f70a76dd1",
                                             [
                                                 pixels.map((pixel)=>`
                     @keyframes pixel-scatter-${pixel.id} {
@@ -603,7 +593,7 @@ function Dashboard() {
                                     children: sphere.icon
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/dashboard/page.tsx",
-                                    lineNumber: 258,
+                                    lineNumber: 218,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -612,7 +602,7 @@ function Dashboard() {
                                     },
                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                         [
-                                            "3bed9ab3fb213ed4",
+                                            "bea3d77f70a76dd1",
                                             [
                                                 pixels.map((pixel)=>`
                     @keyframes pixel-scatter-${pixel.id} {
@@ -646,7 +636,7 @@ function Dashboard() {
                                             },
                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                 [
-                                                    "3bed9ab3fb213ed4",
+                                                    "bea3d77f70a76dd1",
                                                     [
                                                         pixels.map((pixel)=>`
                     @keyframes pixel-scatter-${pixel.id} {
@@ -672,7 +662,7 @@ function Dashboard() {
                                             children: sphere.title
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/dashboard/page.tsx",
-                                            lineNumber: 269,
+                                            lineNumber: 229,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -685,7 +675,7 @@ function Dashboard() {
                                             },
                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                 [
-                                                    "3bed9ab3fb213ed4",
+                                                    "bea3d77f70a76dd1",
                                                     [
                                                         pixels.map((pixel)=>`
                     @keyframes pixel-scatter-${pixel.id} {
@@ -711,13 +701,13 @@ function Dashboard() {
                                             children: sphere.subtitle
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/dashboard/page.tsx",
-                                            lineNumber: 278,
+                                            lineNumber: 238,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/dashboard/page.tsx",
-                                    lineNumber: 268,
+                                    lineNumber: 228,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -728,7 +718,7 @@ function Dashboard() {
                                     },
                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                         [
-                                            "3bed9ab3fb213ed4",
+                                            "bea3d77f70a76dd1",
                                             [
                                                 pixels.map((pixel)=>`
                     @keyframes pixel-scatter-${pixel.id} {
@@ -761,7 +751,7 @@ function Dashboard() {
                                             },
                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                 [
-                                                    "3bed9ab3fb213ed4",
+                                                    "bea3d77f70a76dd1",
                                                     [
                                                         pixels.map((pixel)=>`
                     @keyframes pixel-scatter-${pixel.id} {
@@ -793,7 +783,7 @@ function Dashboard() {
                                                     },
                                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                         [
-                                                            "3bed9ab3fb213ed4",
+                                                            "bea3d77f70a76dd1",
                                                             [
                                                                 pixels.map((pixel)=>`
                     @keyframes pixel-scatter-${pixel.id} {
@@ -819,7 +809,7 @@ function Dashboard() {
                                                     children: "Выполнено задач"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/dashboard/page.tsx",
-                                                    lineNumber: 301,
+                                                    lineNumber: 261,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -831,7 +821,7 @@ function Dashboard() {
                                                     },
                                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                         [
-                                                            "3bed9ab3fb213ed4",
+                                                            "bea3d77f70a76dd1",
                                                             [
                                                                 pixels.map((pixel)=>`
                     @keyframes pixel-scatter-${pixel.id} {
@@ -861,13 +851,13 @@ function Dashboard() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/dashboard/page.tsx",
-                                                    lineNumber: 308,
+                                                    lineNumber: 268,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/dashboard/page.tsx",
-                                            lineNumber: 295,
+                                            lineNumber: 255,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -880,7 +870,7 @@ function Dashboard() {
                                             },
                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                 [
-                                                    "3bed9ab3fb213ed4",
+                                                    "bea3d77f70a76dd1",
                                                     [
                                                         pixels.map((pixel)=>`
                     @keyframes pixel-scatter-${pixel.id} {
@@ -915,7 +905,7 @@ function Dashboard() {
                                                 },
                                                 className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                     [
-                                                        "3bed9ab3fb213ed4",
+                                                        "bea3d77f70a76dd1",
                                                         [
                                                             pixels.map((pixel)=>`
                     @keyframes pixel-scatter-${pixel.id} {
@@ -940,18 +930,18 @@ function Dashboard() {
                                                 ])
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/dashboard/page.tsx",
-                                                lineNumber: 324,
+                                                lineNumber: 284,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/dashboard/page.tsx",
-                                            lineNumber: 317,
+                                            lineNumber: 277,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/dashboard/page.tsx",
-                                    lineNumber: 290,
+                                    lineNumber: 250,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -967,7 +957,7 @@ function Dashboard() {
                                     },
                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                         [
-                                            "3bed9ab3fb213ed4",
+                                            "bea3d77f70a76dd1",
                                             [
                                                 pixels.map((pixel)=>`
                     @keyframes pixel-scatter-${pixel.id} {
@@ -993,7 +983,7 @@ function Dashboard() {
                                     children: "→"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/dashboard/page.tsx",
-                                    lineNumber: 339,
+                                    lineNumber: 299,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1008,7 +998,7 @@ function Dashboard() {
                                     },
                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                         [
-                                            "3bed9ab3fb213ed4",
+                                            "bea3d77f70a76dd1",
                                             [
                                                 pixels.map((pixel)=>`
                     @keyframes pixel-scatter-${pixel.id} {
@@ -1033,27 +1023,27 @@ function Dashboard() {
                                     ])
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/dashboard/page.tsx",
-                                    lineNumber: 353,
+                                    lineNumber: 313,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, sphere.id, true, {
                             fileName: "[project]/src/app/dashboard/page.tsx",
-                            lineNumber: 226,
+                            lineNumber: 186,
                             columnNumber: 25
                         }, this))
                 }, void 0, false, {
                     fileName: "[project]/src/app/dashboard/page.tsx",
-                    lineNumber: 219,
+                    lineNumber: 179,
                     columnNumber: 17
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/app/dashboard/page.tsx",
-                lineNumber: 213,
+                lineNumber: 173,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
-                id: "3bed9ab3fb213ed4",
+                id: "bea3d77f70a76dd1",
                 dynamic: [
                     pixels.map((pixel)=>`
                     @keyframes pixel-scatter-${pixel.id} {
@@ -1079,7 +1069,7 @@ function Dashboard() {
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/dashboard/page.tsx",
-        lineNumber: 145,
+        lineNumber: 105,
         columnNumber: 9
     }, this);
 }

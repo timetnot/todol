@@ -10,7 +10,9 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/styled-jsx/style.js [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react.js [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/navigation.js [app-ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$hooks$2f$useAuth$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/hooks/useAuth.tsx [app-ssr] (ecmascript)");
 "use client";
+;
 ;
 ;
 ;
@@ -18,19 +20,21 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navi
 function Login() {
     const [email, setEmail] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('');
     const [password, setPassword] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('');
-    const [isLoading, setIsLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('');
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRouter"])();
+    const { login, loading } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$hooks$2f$useAuth$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useAuth"])();
     const handleSubmit = async (e)=>{
         e.preventDefault();
-        setIsLoading(true);
-        setTimeout(()=>{
-            localStorage.setItem('isAuthenticated', 'true');
-            localStorage.setItem('user', JSON.stringify({
-                name: 'Пользователь',
-                email: email
-            }));
+        setError('');
+        try {
+            await login({
+                email,
+                password
+            });
             router.push('/profile');
-        }, 1000);
+        } catch (err) {
+            setError(err.message || 'Ошибка входа');
+        }
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         style: {
@@ -44,7 +48,7 @@ function Login() {
         },
         className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
             [
-                "267785bbbf23ff94",
+                "6d0483a0e2ced67d",
                 [
                     Array.from({
                         length: 30
@@ -74,7 +78,7 @@ function Login() {
                 },
                 className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                     [
-                        "267785bbbf23ff94",
+                        "6d0483a0e2ced67d",
                         [
                             Array.from({
                                 length: 30
@@ -97,7 +101,7 @@ function Login() {
                         },
                         className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                             [
-                                "267785bbbf23ff94",
+                                "6d0483a0e2ced67d",
                                 [
                                     Array.from({
                                         length: 30
@@ -126,7 +130,7 @@ function Login() {
                                 },
                                 className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                     [
-                                        "267785bbbf23ff94",
+                                        "6d0483a0e2ced67d",
                                         [
                                             Array.from({
                                                 length: 30
@@ -156,7 +160,7 @@ function Login() {
                                 },
                                 className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                     [
-                                        "267785bbbf23ff94",
+                                        "6d0483a0e2ced67d",
                                         [
                                             Array.from({
                                                 length: 30
@@ -190,7 +194,7 @@ function Login() {
                         },
                         className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                             [
-                                "267785bbbf23ff94",
+                                "6d0483a0e2ced67d",
                                 [
                                     Array.from({
                                         length: 30
@@ -206,13 +210,47 @@ function Login() {
                             ]
                         ]),
                         children: [
+                            error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                style: {
+                                    marginBottom: '1rem',
+                                    padding: '0.75rem',
+                                    background: 'rgba(239, 68, 68, 0.1)',
+                                    border: '1px solid rgba(239, 68, 68, 0.3)',
+                                    borderRadius: '8px',
+                                    color: '#fca5a5',
+                                    fontSize: '0.9rem',
+                                    textAlign: 'center'
+                                },
+                                className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
+                                    [
+                                        "6d0483a0e2ced67d",
+                                        [
+                                            Array.from({
+                                                length: 30
+                                            }, (_, i)=>`
+                    @keyframes fall-${i} {
+                        0% { transform: translateY(-10vh); opacity: 0; }
+                        10% { opacity: 0.3; }
+                        90% { opacity: 0.3; }
+                        100% { transform: translateY(110vh); opacity: 0; }
+                    }
+                `).join('')
+                                        ]
+                                    ]
+                                ]),
+                                children: error
+                            }, void 0, false, {
+                                fileName: "[project]/src/app/login/page.tsx",
+                                lineNumber: 75,
+                                columnNumber: 25
+                            }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 style: {
                                     marginBottom: '1.25rem'
                                 },
                                 className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                     [
-                                        "267785bbbf23ff94",
+                                        "6d0483a0e2ced67d",
                                         [
                                             Array.from({
                                                 length: 30
@@ -238,7 +276,7 @@ function Login() {
                                         },
                                         className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                             [
-                                                "267785bbbf23ff94",
+                                                "6d0483a0e2ced67d",
                                                 [
                                                     Array.from({
                                                         length: 30
@@ -256,7 +294,7 @@ function Login() {
                                         children: "Email"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/login/page.tsx",
-                                        lineNumber: 75,
+                                        lineNumber: 90,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -288,7 +326,7 @@ function Login() {
                                         },
                                         className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                             [
-                                                "267785bbbf23ff94",
+                                                "6d0483a0e2ced67d",
                                                 [
                                                     Array.from({
                                                         length: 30
@@ -305,13 +343,13 @@ function Login() {
                                         ])
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/login/page.tsx",
-                                        lineNumber: 84,
+                                        lineNumber: 99,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/login/page.tsx",
-                                lineNumber: 74,
+                                lineNumber: 89,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -320,7 +358,7 @@ function Login() {
                                 },
                                 className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                     [
-                                        "267785bbbf23ff94",
+                                        "6d0483a0e2ced67d",
                                         [
                                             Array.from({
                                                 length: 30
@@ -346,7 +384,7 @@ function Login() {
                                         },
                                         className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                             [
-                                                "267785bbbf23ff94",
+                                                "6d0483a0e2ced67d",
                                                 [
                                                     Array.from({
                                                         length: 30
@@ -364,7 +402,7 @@ function Login() {
                                         children: "Пароль"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/login/page.tsx",
-                                        lineNumber: 115,
+                                        lineNumber: 130,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -396,7 +434,7 @@ function Login() {
                                         },
                                         className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                             [
-                                                "267785bbbf23ff94",
+                                                "6d0483a0e2ced67d",
                                                 [
                                                     Array.from({
                                                         length: 30
@@ -413,18 +451,18 @@ function Login() {
                                         ])
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/login/page.tsx",
-                                        lineNumber: 124,
+                                        lineNumber: 139,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/login/page.tsx",
-                                lineNumber: 114,
+                                lineNumber: 129,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                 type: "submit",
-                                disabled: isLoading,
+                                disabled: loading,
                                 style: {
                                     width: '100%',
                                     padding: '0.875rem',
@@ -434,27 +472,27 @@ function Login() {
                                     color: '#ffffff',
                                     fontSize: '0.95rem',
                                     fontWeight: 600,
-                                    cursor: isLoading ? 'not-allowed' : 'pointer',
+                                    cursor: loading ? 'not-allowed' : 'pointer',
                                     transition: 'all 0.3s ease',
-                                    opacity: isLoading ? 0.6 : 1,
-                                    transform: isLoading ? 'none' : 'translateY(0)',
+                                    opacity: loading ? 0.6 : 1,
+                                    transform: loading ? 'none' : 'translateY(0)',
                                     boxShadow: '0 4px 14px rgba(99, 102, 241, 0.3)'
                                 },
                                 onMouseEnter: (e)=>{
-                                    if (!isLoading) {
+                                    if (!loading) {
                                         e.currentTarget.style.transform = 'translateY(-2px)';
                                         e.currentTarget.style.boxShadow = '0 8px 20px rgba(99, 102, 241, 0.4)';
                                     }
                                 },
                                 onMouseLeave: (e)=>{
-                                    if (!isLoading) {
+                                    if (!loading) {
                                         e.currentTarget.style.transform = 'translateY(0)';
                                         e.currentTarget.style.boxShadow = '0 4px 14px rgba(99, 102, 241, 0.3)';
                                     }
                                 },
                                 className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                     [
-                                        "267785bbbf23ff94",
+                                        "6d0483a0e2ced67d",
                                         [
                                             Array.from({
                                                 length: 30
@@ -469,10 +507,10 @@ function Login() {
                                         ]
                                     ]
                                 ]),
-                                children: isLoading ? 'Вход...' : 'Войти'
+                                children: loading ? 'Вход...' : 'Войти'
                             }, void 0, false, {
                                 fileName: "[project]/src/app/login/page.tsx",
-                                lineNumber: 154,
+                                lineNumber: 169,
                                 columnNumber: 21
                             }, this)
                         ]
@@ -487,7 +525,7 @@ function Login() {
                         },
                         className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                             [
-                                "267785bbbf23ff94",
+                                "6d0483a0e2ced67d",
                                 [
                                     Array.from({
                                         length: 30
@@ -510,7 +548,7 @@ function Login() {
                             },
                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                 [
-                                    "267785bbbf23ff94",
+                                    "6d0483a0e2ced67d",
                                     [
                                         Array.from({
                                             length: 30
@@ -546,7 +584,7 @@ function Login() {
                                     },
                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                         [
-                                            "267785bbbf23ff94",
+                                            "6d0483a0e2ced67d",
                                             [
                                                 Array.from({
                                                     length: 30
@@ -564,18 +602,18 @@ function Login() {
                                     children: "Зарегистрироваться"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/login/page.tsx",
-                                    lineNumber: 196,
+                                    lineNumber: 211,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/login/page.tsx",
-                            lineNumber: 190,
+                            lineNumber: 205,
                             columnNumber: 21
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/app/login/page.tsx",
-                        lineNumber: 189,
+                        lineNumber: 204,
                         columnNumber: 17
                     }, this)
                 ]
@@ -585,7 +623,7 @@ function Login() {
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
-                id: "267785bbbf23ff94",
+                id: "6d0483a0e2ced67d",
                 dynamic: [
                     Array.from({
                         length: 30

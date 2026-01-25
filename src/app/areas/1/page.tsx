@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
+import { useTodos } from "@/hooks/useTodos";
 import "../../../styles/relations.css";
 
 const relationsSphereConfig = {
@@ -28,117 +29,120 @@ export default function RelationsSphere() {
     const router = useRouter();
     const [newMainTaskDescription, setNewMainTaskDescription] = useState("");
     const [newSubTaskDescription, setNewSubTaskDescription] = useState("");
-    const [mainTasksList, setMainTasksList] = useState<MainTask[]>([]);
+    const [expandedTasks, setExpandedTasks] = useState<Set<number>>(new Set());
+    
+    // Используем наш новый хук с API
+    const { todos, loading, error, createTodo, updateTodo, deleteTodo, toggleTodo } = useTodos({ 
+        sphereId: 1, 
+        useApi: true 
+    });
 
-    const createMainTask = () => {
+    // Конвертация API формата в формат компонента
+    const mainTasksList: MainTask[] = todos.map(todo => ({
+        id: todo.id,
+        description: todo.title,
+        isCompleted: todo.completed,
+        subtasks: todo.description ? [{
+            id: todo.id + 1000, // уникальный ID для подзадачи
+            description: todo.description,
+            isCompleted: todo.completed
+        }] : [],
+        areSubtasksVisible: expandedTasks.has(todo.id)
+    }));
+
+    const createMainTask = async () => {
         if (newMainTaskDescription.trim()) {
-            setMainTasksList(prevTasks => [
-                ...prevTasks,
-                {
-                    id: Date.now(),
-                    description: newMainTaskDescription,
-                    isCompleted: false,
-                    subtasks: [],
-                    areSubtasksVisible: false
-                }
-            ]);
-            setNewMainTaskDescription("");
+            try {
+                await createTodo({
+                    title: newMainTaskDescription,
+                    description: "",
+                    completed: false
+                });
+                setNewMainTaskDescription("");
+            } catch (err) {
+                console.error("Failed to create task:", err);
+                // Здесь можно показать уведомление об ошибке
+            }
         }
     };
 
-    const createSubTask = (parentTaskId: number) => {
+    const createSubTask = async (parentTaskId: number) => {
         if (newSubTaskDescription.trim()) {
-            setMainTasksList(prevTasks =>
-                prevTasks.map(task =>
-                    task.id === parentTaskId
-                        ? {
-                            ...task,
-                            subtasks: [
-                                ...task.subtasks,
-                                {
-                                    id: Date.now(),
-                                    description: newSubTaskDescription,
-                                    isCompleted: false
-                                }
-                            ],
-                            areSubtasksVisible: true
-                        }
-                        : task
-                )
-            );
-            setNewSubTaskDescription("");
+            try {
+                const parentTodo = todos.find(t => t.id === parentTaskId);
+                if (parentTodo) {
+                    await updateTodo(parentTaskId, {
+                        title: parentTodo.title,
+                        description: newSubTaskDescription
+                    });
+                }
+                setNewSubTaskDescription("");
+            } catch (err) {
+                console.error("Failed to create subtask:", err);
+            }
         }
     };
 
-    const toggleMainTaskCompletion = (taskId: number) => {
-        setMainTasksList(prevTasks =>
-            prevTasks.map(task =>
-                task.id === taskId
-                    ? { ...task, isCompleted: !task.isCompleted }
-                    : task
-            )
-        );
+    const toggleMainTaskCompletion = async (taskId: number) => {
+        try {
+            await toggleTodo(taskId);
+        } catch (err) {
+            console.error("Failed to toggle task:", err);
+        }
     };
 
-    const toggleSubTaskCompletion = (parentTaskId: number, subTaskId: number) => {
-        setMainTasksList(prevTasks =>
-            prevTasks.map(task =>
-                task.id === parentTaskId
-                    ? {
-                        ...task,
-                        subtasks: task.subtasks.map(subTask =>
-                            subTask.id === subTaskId
-                                ? { ...subTask, isCompleted: !subTask.isCompleted }
-                                : subTask
-                        )
-                    }
-                    : task
-            )
-        );
+    const toggleSubTaskCompletion = async (parentTaskId: number, subTaskId: number) => {
+        try {
+            const parentTodo = todos.find(t => t.id === parentTaskId);
+            if (parentTodo) {
+                await updateTodo(parentTaskId, {
+                    ...parentTodo,
+                    completed: !parentTodo.completed
+                });
+            }
+        } catch (err) {
+            console.error("Failed to toggle subtask:", err);
+        }
     };
 
     const toggleSubtasksVisibility = (taskId: number) => {
-        setMainTasksList(prevTasks =>
-            prevTasks.map(task =>
-                task.id === taskId
-                    ? { ...task, areSubtasksVisible: !task.areSubtasksVisible }
-                    : task
-            )
-        );
+        setExpandedTasks(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(taskId)) {
+                newSet.delete(taskId);
+            } else {
+                newSet.add(taskId);
+            }
+            return newSet;
+        });
     };
 
-    const removeMainTask = (taskId: number) => {
-        setMainTasksList(prevTasks =>
-            prevTasks.filter(task => task.id !== taskId)
-        );
+    const removeMainTask = async (taskId: number) => {
+        try {
+            await deleteTodo(taskId);
+        } catch (err) {
+            console.error("Failed to delete task:", err);
+        }
     };
 
-    const removeSubTask = (parentTaskId: number, subTaskId: number) => {
-        setMainTasksList(prevTasks =>
-            prevTasks.map(task =>
-                task.id === parentTaskId
-                    ? {
-                        ...task,
-                        subtasks: task.subtasks.filter(
-                            subTask => subTask.id !== subTaskId
-                        )
-                    }
-                    : task
-            )
-        );
+    const removeSubTask = async (parentTaskId: number, subTaskId: number) => {
+        try {
+            const parentTodo = todos.find(t => t.id === parentTaskId);
+            if (parentTodo) {
+                await updateTodo(parentTaskId, {
+                    ...parentTodo,
+                    description: ""
+                });
+            }
+        } catch (err) {
+            console.error("Failed to remove subtask:", err);
+        }
     };
 
     const moveTask = (dragIndex: number, dropIndex: number) => {
+        // Drag & drop можно реализовать позже с API
         if (dragIndex === dropIndex) return;
-        
-        setMainTasksList(prevTasks => {
-            const newTasks = [...prevTasks];
-            const draggedTask = newTasks[dragIndex];
-            newTasks.splice(dragIndex, 1);
-            newTasks.splice(dropIndex, 0, draggedTask);
-
-            return newTasks;
-        });
+        console.log('Drag and drop not implemented with API yet');
     };
 
     const handleDragStart = (e: React.DragEvent, index: number) => {
@@ -156,6 +160,53 @@ export default function RelationsSphere() {
         const dragIndex = parseInt(e.dataTransfer.getData('text/plain'));
         moveTask(dragIndex, dropIndex);
     };
+
+    if (loading) {
+        return (
+            <div className="sphere-page">
+                <div className="bg-aurora" />
+                <header className="header-simple">
+                    <button className="back-btn" onClick={() => router.back()}>
+                        ←
+                    </button>
+                    <div className="hero-compact">
+                        <div className="hero-icon">{relationsSphereConfig.icon}</div>
+                        <h1>{relationsSphereConfig.title}</h1>
+                    </div>
+                </header>
+                <main className="main-content">
+                    <div className="loading-state">
+                        <p>Загрузка задач...</p>
+                    </div>
+                </main>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="sphere-page">
+                <div className="bg-aurora" />
+                <header className="header-simple">
+                    <button className="back-btn" onClick={() => router.back()}>
+                        ←
+                    </button>
+                    <div className="hero-compact">
+                        <div className="hero-icon">{relationsSphereConfig.icon}</div>
+                        <h1>{relationsSphereConfig.title}</h1>
+                    </div>
+                </header>
+                <main className="main-content">
+                    <div className="error-state">
+                        <p>Ошибка загрузки: {error}</p>
+                        <button onClick={() => window.location.reload()}>
+                            Попробовать снова
+                        </button>
+                    </div>
+                </main>
+            </div>
+        );
+    }
 
     return (
         <div className="sphere-page">

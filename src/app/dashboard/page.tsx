@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useTaskStats } from "@/hooks/useTaskStats";
 
 const lifeSpheres = [
     { id: 1, title: "Отношения", icon: "💕", color: "#ec4899", subtitle: "Тепло и забота" },
@@ -13,62 +14,6 @@ const lifeSpheres = [
     { id: 7, title: "Здоровье", icon: "🩺", color: "#3b82f6", subtitle: "Полные силы" },
     { id: 8, title: "Отдых", icon: "😌", color: "#06b6d4", subtitle: "Восстановление сил" },
 ];
-
-
-interface Task {
-    id: string;
-    title: string;
-    completed: boolean;
-    subtasks?: Subtask[];
-}
-
-interface Subtask {
-    id: string;
-    title: string;
-    completed: boolean;
-}
-
-
-const getTasksForSphere = (sphereId: number): Task[] => {
-    if (typeof window === 'undefined') return [];
-    
-    const tasks = localStorage.getItem(`sphere_${sphereId}_tasks`);
-    if (!tasks) return [];
-    
-    try {
-        return JSON.parse(tasks);
-    } catch {
-        return [];
-    }
-};
-
-
-const getTaskStats = (sphereId: number) => {
-    const tasks = getTasksForSphere(sphereId);
-    
-    let completedTasks = 0;
-    let totalTasks = 0;
-    
-    tasks.forEach(task => {
-        totalTasks++;
-        
-
-        if (task.subtasks && task.subtasks.length > 0) {
-            const completedSubtasks = task.subtasks.filter(st => st.completed).length;
-            if (completedSubtasks === task.subtasks.length) {
-                completedTasks++;
-            }
-        } else {
-
-            if (task.completed) {
-                completedTasks++;
-            }
-        }
-    });
-
-    return { completedTasks, totalTasks };
-};
-
 
 const generatePixels = () => {
     return Array.from({ length: 80 }, (_, i) => {
@@ -111,20 +56,36 @@ export default function Dashboard() {
     useEffect(() => {
         setIsClient(true);
         
-
-        const stats: { [key: number]: { completedTasks: number; totalTasks: number } } = {};
-        lifeSpheres.forEach(sphere => {
-            stats[sphere.id] = getTaskStats(sphere.id);
-        });
-        setSphereStats(stats);
+        // Загружаем статистику для всех сфер
+        const loadAllStats = async () => {
+            const stats: { [key: number]: { completedTasks: number; totalTasks: number } } = {};
+            
+            for (const sphere of lifeSpheres) {
+                try {
+                    // Используем API для получения статистики
+                    const response = await fetch(`http://127.0.0.1:8002/api/todos`);
+                    if (response.ok) {
+                        const todos = await response.json();
+                        const completedTasks = todos.filter((todo: any) => todo.completed).length;
+                        const totalTasks = todos.length;
+                        stats[sphere.id] = { completedTasks, totalTasks };
+                    } else {
+                        stats[sphere.id] = { completedTasks: 0, totalTasks: 0 };
+                    }
+                } catch (error) {
+                    console.error(`Failed to load stats for sphere ${sphere.id}:`, error);
+                    stats[sphere.id] = { completedTasks: 0, totalTasks: 0 };
+                }
+            }
+            
+            setSphereStats(stats);
+        };
         
-
+        loadAllStats();
+        
+        // Слушатели для обновления статистики
         const handleStorageChange = () => {
-            const newStats: { [key: number]: { completedTasks: number; totalTasks: number } } = {};
-            lifeSpheres.forEach(sphere => {
-                newStats[sphere.id] = getTaskStats(sphere.id);
-            });
-            setSphereStats(newStats);
+            loadAllStats();
         };
         
         window.addEventListener('storage', handleStorageChange);

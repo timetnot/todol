@@ -24,7 +24,6 @@ function Profile() {
         bio: ''
     });
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRouter"])();
-    // Функция для получения статистики задач из localStorage
     const getTaskStats = ()=>{
         const stats = {
             totalTasks: 0,
@@ -33,14 +32,12 @@ function Profile() {
             completedSubtasks: 0,
             sphereStats: {}
         };
-        // Получаем статистику из всех сфер
         for(let i = 1; i <= 8; i++){
             const tasks = JSON.parse(localStorage.getItem(`tasks_sphere_${i}`) || '[]');
             const sphereTasks = tasks.length;
             const sphereCompleted = tasks.filter((task)=>task.completed).length;
             stats.totalTasks += sphereTasks;
             stats.completedTasks += sphereCompleted;
-            // Считаем подзадачи
             const subtasks = tasks.reduce((acc, task)=>acc + (task.subtasks?.length || 0), 0);
             const completedSubtasks = tasks.reduce((acc, task)=>acc + (task.subtasks?.filter((st)=>st.completed).length || 0), 0);
             stats.totalSubtasks += subtasks;
