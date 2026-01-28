@@ -1,10 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { type DragEvent, useState } from "react";
+import { type DragEvent, useState, useEffect } from "react";
+import { useTodos } from "@/hooks/useTodos";
 import "../../../styles/finance.css";
 
-const financeSphereConfig = {
+const financesSphereConfig = {
     title: "Финансы",
     icon: "💰",
     accentColor: "#8b5cf6"
@@ -24,25 +25,47 @@ type MainTask = {
     areSubtasksVisible: boolean;
 };
 
-export default function FinanceSphere() {
+export default function FinancesSphere() {
     const router = useRouter();
     const [newMainTaskDescription, setNewMainTaskDescription] = useState("");
     const [newSubTaskDescription, setNewSubTaskDescription] = useState("");
     const [mainTasksList, setMainTasksList] = useState<MainTask[]>([]);
+    
+    // Используем наш новый хук с API для сферы 4 (Финансы)
+    const { todos, loading, error, createTodo, updateTodo, deleteTodo, toggleTodo } = useTodos({ 
+        sphereId: 4, 
+        useApi: true 
+    });
 
-    const createMainTask = () => {
+    // Обновляем mainTasksList при изменении todos из API
+    useEffect(() => {
+        const convertedTasks: MainTask[] = todos.map(todo => ({
+            id: todo.id,
+            description: todo.title,
+            isCompleted: todo.completed,
+            subtasks: todo.description ? [{
+                id: todo.id + 1000,
+                description: todo.description,
+                isCompleted: todo.completed
+            }] : [],
+            areSubtasksVisible: false
+        }));
+        setMainTasksList(convertedTasks);
+    }, [todos]);
+
+    const createMainTask = async () => {
         if (newMainTaskDescription.trim()) {
-            setMainTasksList(prevTasks => [
-                ...prevTasks,
-                {
-                    id: Date.now(),
-                    description: newMainTaskDescription,
-                    isCompleted: false,
-                    subtasks: [],
-                    areSubtasksVisible: false
-                }
-            ]);
-            setNewMainTaskDescription("");
+            try {
+                await createTodo({
+                    title: newMainTaskDescription,
+                    description: newSubTaskDescription.trim() || undefined,
+                    completed: false
+                });
+                setNewMainTaskDescription("");
+                setNewSubTaskDescription("");
+            } catch (error) {
+                console.error('Failed to create task:', error);
+            }
         }
     };
 
@@ -70,14 +93,12 @@ export default function FinanceSphere() {
         }
     };
 
-    const toggleMainTaskCompletion = (taskId: number) => {
-        setMainTasksList(prevTasks =>
-            prevTasks.map(task =>
-                task.id === taskId
-                    ? { ...task, isCompleted: !task.isCompleted }
-                    : task
-            )
-        );
+    const toggleMainTaskCompletion = async (taskId: number) => {
+        try {
+            await toggleTodo(taskId);
+        } catch (error) {
+            console.error('Failed to toggle task:', error);
+        }
     };
 
     const toggleSubTaskCompletion = (parentTaskId: number, subTaskId: number) => {
@@ -107,10 +128,12 @@ export default function FinanceSphere() {
         );
     };
 
-    const removeMainTask = (taskId: number) => {
-        setMainTasksList(prevTasks =>
-            prevTasks.filter(task => task.id !== taskId)
-        );
+    const removeMainTask = async (taskId: number) => {
+        try {
+            await deleteTodo(taskId);
+        } catch (error) {
+            console.error('Failed to delete task:', error);
+        }
     };
 
     const removeSubTask = (parentTaskId: number, subTaskId: number) => {
@@ -157,6 +180,36 @@ export default function FinanceSphere() {
         moveTask(dragIndex, dropIndex);
     };
 
+    if (loading) {
+        return (
+            <div style={{ 
+                minHeight: '100vh', 
+                background: 'linear-gradient(180deg, #0f172a 0%, #000 100%)', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                color: '#ffffff'
+            }}>
+                <div>Загрузка...</div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div style={{ 
+                minHeight: '100vh', 
+                background: 'linear-gradient(180deg, #0f172a 0%, #000 100%)', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                color: '#ffffff'
+            }}>
+                <div>Ошибка: {error}</div>
+            </div>
+        );
+    }
+
     return (
         <div className="sphere-page">
             <div className="bg-aurora" />
@@ -165,8 +218,8 @@ export default function FinanceSphere() {
                     ←
                 </button>
                 <div className="hero-compact">
-                    <div className="hero-icon">{financeSphereConfig.icon}</div>
-                    <h1>{financeSphereConfig.title}</h1>
+                    <div className="hero-icon">{financesSphereConfig.icon}</div>
+                    <h1>{financesSphereConfig.title}</h1>
                 </div>
             </header>
 
@@ -328,7 +381,7 @@ export default function FinanceSphere() {
                         onChange={e =>
                             setNewMainTaskDescription(e.target.value)
                         }
-                        placeholder="Например: Составить бюджет на месяц"
+                        placeholder="Например: Создать бюджет на месяц"
                         onKeyDown={e => e.key === "Enter" && createMainTask()}
                     />
                     <button className="add-btn" onClick={createMainTask}>

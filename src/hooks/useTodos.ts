@@ -51,12 +51,21 @@ export function useTodos({ sphereId, useApi = true }: UseTodosOptions) {
     const createTodo = useCallback(async (todoData: CreateTodoRequest) => {
         try {
             if (useApi) {
-                const newTodo = await apiService.createTodo(todoData);
+                // Добавляем sphere_id к данным задачи
+                const todoWithSphere = {
+                    ...todoData,
+                    sphere_id: sphereId
+                };
+                
+                const newTodo = await apiService.createTodo(todoWithSphere);
                 setTodos(prev => [newTodo, ...prev]);
                 
                 // Синхронизация с localStorage
                 const localTodos = localStorageService.apiToLocalStorage([newTodo, ...todos], sphereId);
                 localStorageService.saveTodos(sphereId, localTodos);
+                
+                // Триггер для обновления статистики в dashboard
+                window.dispatchEvent(new Event('taskUpdated'));
                 
                 return newTodo;
             } else {
@@ -64,7 +73,10 @@ export function useTodos({ sphereId, useApi = true }: UseTodosOptions) {
                 const newId = Date.now();
                 const newTodo: Todo = {
                     id: newId,
-                    ...todoData,
+                    title: todoData.title,
+                    description: todoData.description,
+                    completed: todoData.completed || false,
+                    sphere_id: sphereId,
                     created_at: new Date().toISOString(),
                     updated_at: new Date().toISOString()
                 };
@@ -72,6 +84,9 @@ export function useTodos({ sphereId, useApi = true }: UseTodosOptions) {
                 
                 const localTodos = localStorageService.apiToLocalStorage([newTodo, ...todos], sphereId);
                 localStorageService.saveTodos(sphereId, localTodos);
+                
+                // Триггер для обновления статистики в dashboard
+                window.dispatchEvent(new Event('taskUpdated'));
                 
                 return newTodo;
             }
@@ -98,6 +113,9 @@ export function useTodos({ sphereId, useApi = true }: UseTodosOptions) {
                 const localTodos = localStorageService.apiToLocalStorage(updatedTodos, sphereId);
                 localStorageService.saveTodos(sphereId, localTodos);
                 
+                // Триггер для обновления статистики в dashboard
+                window.dispatchEvent(new Event('taskUpdated'));
+                
                 return updatedTodo;
             } else {
                 const updatedTodo: Todo = {
@@ -114,6 +132,9 @@ export function useTodos({ sphereId, useApi = true }: UseTodosOptions) {
                 );
                 const localTodos = localStorageService.apiToLocalStorage(updatedTodos, sphereId);
                 localStorageService.saveTodos(sphereId, localTodos);
+                
+                // Триггер для обновления статистики в dashboard
+                window.dispatchEvent(new Event('taskUpdated'));
                 
                 return updatedTodo;
             }
@@ -135,12 +156,18 @@ export function useTodos({ sphereId, useApi = true }: UseTodosOptions) {
                 const updatedTodos = todos.filter(todo => todo.id !== id);
                 const localTodos = localStorageService.apiToLocalStorage(updatedTodos, sphereId);
                 localStorageService.saveTodos(sphereId, localTodos);
+                
+                // Триггер для обновления статистики в dashboard
+                window.dispatchEvent(new Event('taskUpdated'));
             } else {
                 setTodos(prev => prev.filter(todo => todo.id !== id));
                 
                 const updatedTodos = todos.filter(todo => todo.id !== id);
                 const localTodos = localStorageService.apiToLocalStorage(updatedTodos, sphereId);
                 localStorageService.saveTodos(sphereId, localTodos);
+                
+                // Триггер для обновления статистики в dashboard
+                window.dispatchEvent(new Event('taskUpdated'));
             }
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to delete todo';

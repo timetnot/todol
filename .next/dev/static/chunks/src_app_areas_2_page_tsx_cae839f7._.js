@@ -121,7 +121,7 @@ function FamilySphere() {
                 className: "bg-aurora"
             }, void 0, false, {
                 fileName: "[project]/src/app/areas/2/page.tsx",
-                lineNumber: 162,
+                lineNumber: 163,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("header", {
@@ -133,7 +133,7 @@ function FamilySphere() {
                         children: "←"
                     }, void 0, false, {
                         fileName: "[project]/src/app/areas/2/page.tsx",
-                        lineNumber: 164,
+                        lineNumber: 165,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -144,26 +144,26 @@ function FamilySphere() {
                                 children: familySphereConfig.icon
                             }, void 0, false, {
                                 fileName: "[project]/src/app/areas/2/page.tsx",
-                                lineNumber: 168,
+                                lineNumber: 169,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
                                 children: familySphereConfig.title
                             }, void 0, false, {
                                 fileName: "[project]/src/app/areas/2/page.tsx",
-                                lineNumber: 169,
+                                lineNumber: 170,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/areas/2/page.tsx",
-                        lineNumber: 167,
+                        lineNumber: 168,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/areas/2/page.tsx",
-                lineNumber: 163,
+                lineNumber: 164,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -177,12 +177,12 @@ function FamilySphere() {
                                 children: "Создай первую задачу для семьи"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/areas/2/page.tsx",
-                                lineNumber: 177,
+                                lineNumber: 178,
                                 columnNumber: 29
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/app/areas/2/page.tsx",
-                            lineNumber: 176,
+                            lineNumber: 177,
                             columnNumber: 25
                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "tasks-scrollable",
@@ -207,14 +207,14 @@ function FamilySphere() {
                                                                 onChange: ()=>toggleMainTaskCompletion(task.id)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/areas/2/page.tsx",
-                                                                lineNumber: 193,
+                                                                lineNumber: 194,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                 className: "custom-checkbox"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/areas/2/page.tsx",
-                                                                lineNumber: 200,
+                                                                lineNumber: 201,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -235,19 +235,19 @@ function FamilySphere() {
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/app/areas/2/page.tsx",
-                                                                        lineNumber: 208,
+                                                                        lineNumber: 209,
                                                                         columnNumber: 57
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/areas/2/page.tsx",
-                                                                lineNumber: 201,
+                                                                lineNumber: 202,
                                                                 columnNumber: 49
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/areas/2/page.tsx",
-                                                        lineNumber: 192,
+                                                        lineNumber: 193,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -259,7 +259,7 @@ function FamilySphere() {
                                                                 children: task.areSubtasksVisible ? "−" : "+"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/areas/2/page.tsx",
-                                                                lineNumber: 222,
+                                                                lineNumber: 223,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -268,19 +268,19 @@ function FamilySphere() {
                                                                 children: "×"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/areas/2/page.tsx",
-                                                                lineNumber: 230,
+                                                                lineNumber: 231,
                                                                 columnNumber: 49
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/areas/2/page.tsx",
-                                                        lineNumber: 221,
+                                                        lineNumber: 222,
                                                         columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/areas/2/page.tsx",
-                                                lineNumber: 191,
+                                                lineNumber: 192,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -300,14 +300,14 @@ function FamilySphere() {
                                                                                 onChange: ()=>toggleSubTaskCompletion(task.id, subTask.id)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/areas/2/page.tsx",
-                                                                                lineNumber: 253,
+                                                                                lineNumber: 254,
                                                                                 columnNumber: 65
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                                 className: "custom-subcheckbox"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/areas/2/page.tsx",
-                                                                                lineNumber: 265,
+                                                                                lineNumber: 266,
                                                                                 columnNumber: 65
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -315,13 +315,13 @@ function FamilySphere() {
                                                                                 children: subTask.description
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/areas/2/page.tsx",
-                                                                                lineNumber: 266,
+                                                                                lineNumber: 267,
                                                                                 columnNumber: 65
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/app/areas/2/page.tsx",
-                                                                        lineNumber: 252,
+                                                                        lineNumber: 253,
                                                                         columnNumber: 61
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -330,18 +330,18 @@ function FamilySphere() {
                                                                         children: "×"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/areas/2/page.tsx",
-                                                                        lineNumber: 276,
+                                                                        lineNumber: 277,
                                                                         columnNumber: 61
                                                                     }, this)
                                                                 ]
                                                             }, subTask.id, true, {
                                                                 fileName: "[project]/src/app/areas/2/page.tsx",
-                                                                lineNumber: 248,
+                                                                lineNumber: 249,
                                                                 columnNumber: 57
                                                             }, this))
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/areas/2/page.tsx",
-                                                        lineNumber: 246,
+                                                        lineNumber: 247,
                                                         columnNumber: 49
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -355,7 +355,7 @@ function FamilySphere() {
                                                                 onKeyDown: (e)=>e.key === "Enter" && createSubTask(task.id)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/areas/2/page.tsx",
-                                                                lineNumber: 293,
+                                                                lineNumber: 294,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -364,40 +364,40 @@ function FamilySphere() {
                                                                 children: "Добавить"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/areas/2/page.tsx",
-                                                                lineNumber: 307,
+                                                                lineNumber: 308,
                                                                 columnNumber: 49
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/areas/2/page.tsx",
-                                                        lineNumber: 292,
+                                                        lineNumber: 293,
                                                         columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/areas/2/page.tsx",
-                                                lineNumber: 240,
+                                                lineNumber: 241,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, task.id, true, {
                                         fileName: "[project]/src/app/areas/2/page.tsx",
-                                        lineNumber: 183,
+                                        lineNumber: 184,
                                         columnNumber: 37
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/src/app/areas/2/page.tsx",
-                                lineNumber: 181,
+                                lineNumber: 182,
                                 columnNumber: 29
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/app/areas/2/page.tsx",
-                            lineNumber: 180,
+                            lineNumber: 181,
                             columnNumber: 25
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/app/areas/2/page.tsx",
-                        lineNumber: 174,
+                        lineNumber: 175,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -411,7 +411,7 @@ function FamilySphere() {
                                 onKeyDown: (e)=>e.key === "Enter" && createMainTask()
                             }, void 0, false, {
                                 fileName: "[project]/src/app/areas/2/page.tsx",
-                                lineNumber: 325,
+                                lineNumber: 326,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -420,25 +420,25 @@ function FamilySphere() {
                                 children: "Добавить"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/areas/2/page.tsx",
-                                lineNumber: 334,
+                                lineNumber: 335,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/areas/2/page.tsx",
-                        lineNumber: 324,
+                        lineNumber: 325,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/areas/2/page.tsx",
-                lineNumber: 173,
+                lineNumber: 174,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/areas/2/page.tsx",
-        lineNumber: 161,
+        lineNumber: 162,
         columnNumber: 9
     }, this);
 }

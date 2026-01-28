@@ -23,7 +23,7 @@ function ApiStatus() {
             const checkApiStatus = {
                 "ApiStatus.useEffect.checkApiStatus": async ()=>{
                     try {
-                        const response = await fetch('http://127.0.0.1:8002/api/todos');
+                        const response = await fetch('http://localhost:8001/api/todos');
                         if (response.ok) {
                             setStatus('online');
                         } else {

@@ -2,25 +2,29 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
     const router = useRouter();
+    const { login } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
+        setError('');
 
-        setTimeout(() => {
-            localStorage.setItem('isAuthenticated', 'true');
-            localStorage.setItem('user', JSON.stringify({
-                name: 'Пользователь',
-                email: email
-            }));
+        try {
+            await login({ email, password });
             router.push('/profile');
-        }, 1000);
+        } catch (err: any) {
+            setError(err.message || 'Ошибка при входе');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -69,6 +73,26 @@ export default function Login() {
                         Добро пожаловать!
                     </p>
                 </div>
+                
+                {error && (
+                    <div style={{
+                        background: 'rgba(239, 68, 68, 0.1)',
+                        border: '1px solid rgba(239, 68, 68, 0.3)',
+                        borderRadius: '8px',
+                        padding: '0.75rem',
+                        marginBottom: '1.5rem',
+                        textAlign: 'center'
+                    }}>
+                        <p style={{
+                            color: '#f87171',
+                            fontSize: '0.875rem',
+                            margin: 0,
+                            fontWeight: 500
+                        }}>
+                            {error}
+                        </p>
+                    </div>
+                )}
                 
                 <form onSubmit={handleSubmit} style={{ marginBottom: '1.5rem' }}>
                     <div style={{ marginBottom: '1.25rem' }}>

@@ -9,15 +9,83 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
+function verifyToken($token) {
+    if (!$token) return null;
+    
+    try {
+        $db = new SQLite3('database/database.sqlite');
+        $db->busyTimeout(5000);
+        $hashedToken = hash('sha256', $token);
+        $stmt = $db->prepare('SELECT u.* FROM users u 
+                              JOIN personal_access_tokens t ON u.id = t.tokenable_id 
+                              WHERE t.token = :token AND (t.expires_at IS NULL OR t.expires_at > datetime("now"))');
+        $stmt->bindValue(':token', $hashedToken, SQLITE3_TEXT);
+        $result = $stmt->execute();
+        $user = $result->fetchArray(SQLITE3_ASSOC);
+        $db->close();
+        return $user;
+    } catch (Exception $e) {
+        error_log("Token verification error: " . $e->getMessage());
+        return null;
+    }
+}
+
+function generateToken($userId) {
+    $token = bin2hex(random_bytes(32));
+    $hashedToken = hash('sha256', $token);
+    
+    try {
+        $db = new SQLite3('database/database.sqlite');
+        $db->busyTimeout(5000);
+        $stmt = $db->prepare('INSERT INTO personal_access_tokens 
+                             (tokenable_type, tokenable_id, name, token, expires_at, created_at, updated_at) 
+                             VALUES (:type, :id, :name, :token, datetime("now", "+1 year"), datetime("now"), datetime("now"))');
+        $stmt->bindValue(':type', 'App\\Models\\User', SQLITE3_TEXT);
+        $stmt->bindValue(':id', $userId, SQLITE3_INTEGER);
+        $stmt->bindValue(':name', 'auth_token', SQLITE3_TEXT);
+        $stmt->bindValue(':token', $hashedToken, SQLITE3_TEXT);
+        $stmt->execute();
+        $db->close();
+    } catch (Exception $e) {
+        error_log("Token generation error: " . $e->getMessage());
+        return null;
+    }
+    
+    return $token;
+}
+
 try {
     $db = new SQLite3('database/database.sqlite');
+    $db->busyTimeout(5000);
     
-    // Create table if not exists
+    $db->exec('CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )');
+    
     $db->exec('CREATE TABLE IF NOT EXISTS todos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
         description TEXT,
         completed INTEGER DEFAULT 0,
+        user_id INTEGER NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )');
+    
+    $db->exec('CREATE TABLE IF NOT EXISTS personal_access_tokens (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        tokenable_type VARCHAR(255) NOT NULL,
+        tokenable_id INTEGER NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        token VARCHAR(64) UNIQUE NOT NULL,
+        abilities TEXT NULL,
+        last_used_at DATETIME NULL,
+        expires_at DATETIME NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )');
@@ -25,14 +93,132 @@ try {
     $method = $_SERVER['REQUEST_METHOD'];
     $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     
-    // Remove /api prefix if present
     $path = str_replace('/api', '', $path);
+    
+    $headers = getallheaders();
+    $authHeader = $headers['Authorization'] ?? '';
+    $token = str_replace('Bearer ', '', $authHeader);
+    $currentUser = null;
+    
+    if ($path === '/auth/register' && $method === 'POST') {
+        $input = json_decode(file_get_contents('php://input'), true);
+        
+        if (!isset($input['name']) || !isset($input['email']) || !isset($input['password'])) {
+            http_response_code(400);
+            echo json_encode(['message' => 'Не все поля заполнены']);
+            exit;
+        }
+        
+        if (isset($input['password_confirmation']) && $input['password'] !== $input['password_confirmation']) {
+            http_response_code(400);
+            echo json_encode(['message' => 'Пароли не совпадают']);
+            exit;
+        }
+        
+        $stmt = $db->prepare('SELECT id FROM users WHERE email = :email');
+        $stmt->bindValue(':email', $input['email'], SQLITE3_TEXT);
+        $result = $stmt->execute();
+        
+        if ($result->fetchArray()) {
+            http_response_code(400);
+            echo json_encode(['message' => 'Email уже существует']);
+            exit;
+        }
+        
+        $stmt = $db->prepare('INSERT INTO users (name, email, password) VALUES (:name, :email, :password)');
+        $stmt->bindValue(':name', $input['name'], SQLITE3_TEXT);
+        $stmt->bindValue(':email', $input['email'], SQLITE3_TEXT);
+        $stmt->bindValue(':password', password_hash($input['password'], PASSWORD_DEFAULT), SQLITE3_TEXT);
+        $stmt->execute();
+        
+        $userId = $db->lastInsertRowID();
+        $token = generateToken($userId);
+        
+        $stmt = $db->prepare('SELECT id, name, email, created_at, updated_at FROM users WHERE id = :id');
+        $stmt->bindValue(':id', $userId, SQLITE3_INTEGER);
+        $result = $stmt->execute();
+        $user = $result->fetchArray(SQLITE3_ASSOC);
+        
+        echo json_encode([
+            'user' => $user,
+            'token' => $token
+        ]);
+        exit;
+    }
+    
+    if ($path === '/auth/login' && $method === 'POST') {
+        $input = json_decode(file_get_contents('php://input'), true);
+        
+        if (!isset($input['email']) || !isset($input['password'])) {
+            http_response_code(400);
+            echo json_encode(['message' => 'Email и пароль обязательны']);
+            exit;
+        }
+        
+        $stmt = $db->prepare('SELECT id, name, email, password FROM users WHERE email = :email');
+        $stmt->bindValue(':email', $input['email'], SQLITE3_TEXT);
+        $result = $stmt->execute();
+        $user = $result->fetchArray(SQLITE3_ASSOC);
+        
+        if (!$user || !password_verify($input['password'], $user['password'])) {
+            http_response_code(401);
+            echo json_encode(['message' => 'Неверные учетные данные']);
+            exit;
+        }
+        
+        $token = generateToken($user['id']);
+        
+        unset($user['password']);
+        
+        echo json_encode([
+            'user' => $user,
+            'token' => $token
+        ]);
+        exit;
+    }
+    
+    if ($path === '/auth/user' && $method === 'GET') {
+        $currentUser = verifyToken($token);
+        if (!$currentUser) {
+            http_response_code(401);
+            echo json_encode(['message' => 'Неавторизован']);
+            exit;
+        }
+        
+        unset($currentUser['password']);
+        echo json_encode($currentUser);
+        exit;
+    }
+    
+    if ($path === '/auth/logout' && $method === 'POST') {
+        $currentUser = verifyToken($token);
+        if (!$currentUser) {
+            http_response_code(401);
+            echo json_encode(['message' => 'Неавторизован']);
+            exit;
+        }
+        
+        $stmt = $db->prepare('DELETE FROM personal_access_tokens WHERE token = :token');
+        $stmt->bindValue(':token', hash('sha256', $token), SQLITE3_TEXT);
+        $stmt->execute();
+        
+        echo json_encode(['message' => 'Выход выполнен успешно']);
+        exit;
+    }
+    
+    $currentUser = verifyToken($token);
+    if (!$currentUser) {
+        http_response_code(401);
+        echo json_encode(['message' => 'Неавторизован']);
+        exit;
+    }
     
     switch ($method) {
         case 'GET':
             if ($path === '/todos' || $path === '/todos/') {
-                // Get all todos
-                $result = $db->query('SELECT * FROM todos ORDER BY created_at DESC');
+                $stmt = $db->prepare('SELECT * FROM todos WHERE user_id = :user_id ORDER BY created_at DESC');
+                $stmt->bindValue(':user_id', $currentUser['id'], SQLITE3_INTEGER);
+                $result = $stmt->execute();
                 $todos = [];
                 while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
                     $todos[] = [
@@ -46,10 +232,10 @@ try {
                 }
                 echo json_encode($todos);
             } elseif (preg_match('/^\/todos\/(\d+)$/', $path, $matches)) {
-                // Get single todo
                 $id = $matches[1];
-                $stmt = $db->prepare('SELECT * FROM todos WHERE id = :id');
+                $stmt = $db->prepare('SELECT * FROM todos WHERE id = :id AND user_id = :user_id');
                 $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
+                $stmt->bindValue(':user_id', $currentUser['id'], SQLITE3_INTEGER);
                 $result = $stmt->execute();
                 $row = $result->fetchArray(SQLITE3_ASSOC);
                 
@@ -79,16 +265,18 @@ try {
                     break;
                 }
                 
-                $stmt = $db->prepare('INSERT INTO todos (title, description, completed, created_at, updated_at) VALUES (:title, :description, :completed, datetime("now"), datetime("now"))');
+                $stmt = $db->prepare('INSERT INTO todos (title, description, completed, user_id, created_at, updated_at) VALUES (:title, :description, :completed, :user_id, datetime("now"), datetime("now"))');
                 $stmt->bindValue(':title', $input['title'], SQLITE3_TEXT);
                 $stmt->bindValue(':description', $input['description'] ?? null, SQLITE3_TEXT);
                 $stmt->bindValue(':completed', $input['completed'] ?? false, SQLITE3_INTEGER);
+                $stmt->bindValue(':user_id', $currentUser['id'], SQLITE3_INTEGER);
                 $stmt->execute();
                 
                 $id = $db->lastInsertRowID();
                 
-                // Get the created todo
-                $result = $db->query('SELECT * FROM todos WHERE id = ' . $id);
+                $stmt = $db->prepare('SELECT * FROM todos WHERE id = :id');
+                $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
+                $result = $stmt->execute();
                 $row = $result->fetchArray(SQLITE3_ASSOC);
                 
                 http_response_code(201);
@@ -108,8 +296,11 @@ try {
                 $id = $matches[1];
                 $input = json_decode(file_get_contents('php://input'), true);
                 
-                // Check if todo exists
-                $check = $db->query('SELECT id FROM todos WHERE id = ' . $id);
+                // Check if todo exists and belongs to user
+                $stmt = $db->prepare('SELECT id FROM todos WHERE id = :id AND user_id = :user_id');
+                $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
+                $stmt->bindValue(':user_id', $currentUser['id'], SQLITE3_INTEGER);
+                $check = $stmt->execute();
                 if (!$check->fetchArray()) {
                     http_response_code(404);
                     echo json_encode(['error' => 'Todo not found']);
@@ -149,8 +340,9 @@ try {
                 }
                 $stmt->execute();
                 
-                // Get updated todo
-                $result = $db->query('SELECT * FROM todos WHERE id = ' . $id);
+                $stmt = $db->prepare('SELECT * FROM todos WHERE id = :id');
+                $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
+                $result = $stmt->execute();
                 $row = $result->fetchArray(SQLITE3_ASSOC);
                 
                 echo json_encode([
@@ -168,16 +360,20 @@ try {
             if (preg_match('/^\/todos\/(\d+)$/', $path, $matches)) {
                 $id = $matches[1];
                 
-                // Check if todo exists
-                $check = $db->query('SELECT id FROM todos WHERE id = ' . $id);
+                // Check if todo exists and belongs to user
+                $stmt = $db->prepare('SELECT id FROM todos WHERE id = :id AND user_id = :user_id');
+                $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
+                $stmt->bindValue(':user_id', $currentUser['id'], SQLITE3_INTEGER);
+                $check = $stmt->execute();
                 if (!$check->fetchArray()) {
                     http_response_code(404);
                     echo json_encode(['error' => 'Todo not found']);
                     break;
                 }
                 
-                $stmt = $db->prepare('DELETE FROM todos WHERE id = :id');
+                $stmt = $db->prepare('DELETE FROM todos WHERE id = :id AND user_id = :user_id');
                 $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
+                $stmt->bindValue(':user_id', $currentUser['id'], SQLITE3_INTEGER);
                 $stmt->execute();
                 
                 http_response_code(204);

@@ -2,18 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Header() {
     const router = useRouter();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [userName, setUserName] = useState("");
-
-    useEffect(() => {
-        const auth = localStorage.getItem('isAuthenticated');
-        const name = localStorage.getItem('userName');
-        setIsAuthenticated(auth === 'true');
-        setUserName(name || 'Гость');
-    }, []);
+    const { user, isAuthenticated, logout } = useAuth();
 
     const handleLogin = () => {
         router.push('/login');
@@ -27,12 +20,8 @@ export default function Header() {
         router.push('/profile');
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem('isAuthenticated');
-        localStorage.removeItem('userName');
-        localStorage.removeItem('userEmail');
-        setIsAuthenticated(false);
-        setUserName('Гость');
+    const handleLogout = async () => {
+        await logout();
         router.push('/');
     };
 
@@ -99,7 +88,7 @@ export default function Header() {
                                     e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
                                 }}
                             >
-                                👤 {userName.split(' ')[0]}
+                                👤 {user?.name?.split(' ')[0] || 'Пользователь'}
                             </button>
                             <button
                                 onClick={handleLogout}

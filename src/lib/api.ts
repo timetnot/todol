@@ -1,10 +1,11 @@
-const API_BASE_URL = 'http://127.0.0.1:8002/api';
+const API_BASE_URL = 'http://localhost:8001/api';
 
 export interface Todo {
     id: number;
     title: string;
     description?: string;
     completed: boolean;
+    sphere_id?: number;
     created_at: string;
     updated_at: string;
 }
@@ -13,6 +14,7 @@ export interface CreateTodoRequest {
     title: string;
     description?: string;
     completed?: boolean;
+    sphere_id?: number;
 }
 
 export interface UpdateTodoRequest {
@@ -22,15 +24,23 @@ export interface UpdateTodoRequest {
 }
 
 class ApiService {
+    private getAuthToken(): string | null {
+        if (typeof window === 'undefined') return null;
+        return localStorage.getItem('auth_token');
+    }
+
     private async request<T>(
         endpoint: string,
         options: RequestInit = {}
     ): Promise<T> {
         const url = `${API_BASE_URL}${endpoint}`;
+        const token = this.getAuthToken();
         
         const config: RequestInit = {
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                ...(token && { 'Authorization': `Bearer ${token}` }),
                 ...options.headers,
             },
             ...options,
@@ -40,6 +50,15 @@ class ApiService {
             const response = await fetch(url, config);
             
             if (!response.ok) {
+                if (response.status === 401) {
+                    // Токен истек, удаляем его и перенаправляем на страницу входа
+                    if (typeof window !== 'undefined') {
+                        localStorage.removeItem('auth_token');
+                        localStorage.removeItem('user');
+                        window.location.href = '/login';
+                    }
+                }
+                
                 const errorText = await response.text();
                 throw new Error(`API Error: ${response.status} - ${errorText}`);
             }
@@ -59,13 +78,13 @@ class ApiService {
     // Получить все задачи
     async getTodos(sphereId?: number): Promise<Todo[]> {
         try {
-            const todos = await this.request<Todo[]>('/todos');
+            let url = '/todos';
             
-            // Если указан sphereId, фильтруем задачи по сфере
+            // Если указан sphereId, фильтруем на клиенте (поскольку API не поддерживает фильтрацию)
+            const todos = await this.request<Todo[]>(url);
+            
             if (sphereId) {
-                // В реальном приложении здесь была бы фильтрация по sphereId
-                // Пока возвращаем все задачи для демонстрации
-                return todos;
+                return todos.filter(todo => todo.sphere_id === sphereId);
             }
             
             return todos;

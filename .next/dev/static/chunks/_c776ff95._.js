@@ -6,130 +6,119 @@ __turbopack_context__.s([
     "authService",
     ()=>authService
 ]);
-const API_BASE_URL = 'http://127.0.0.1:8002/api';
+const API_BASE_URL = 'http://localhost:8000/api.php';
 class AuthService {
+    token = null;
+    constructor(){
+        if ("TURBOPACK compile-time truthy", 1) {
+            this.token = localStorage.getItem('auth_token');
+        }
+    }
     async request(endpoint, options = {}) {
         const url = `${API_BASE_URL}${endpoint}`;
         const config = {
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                ...this.token && {
+                    'Authorization': `Bearer ${this.token}`
+                },
                 ...options.headers
             },
             ...options
         };
-        // Add auth token if available
-        const token = this.getToken();
-        if (token) {
-            config.headers = {
-                ...config.headers,
-                'Authorization': `Bearer ${token}`
-            };
-        }
         try {
             const response = await fetch(url, config);
             if (!response.ok) {
-                const errorText = await response.text();
-                let errorMessage;
-                try {
-                    const errorJson = JSON.parse(errorText);
-                    errorMessage = errorJson.message || errorJson.errors?.email?.[0] || errorJson.errors?.password?.[0] || `API Error: ${response.status}`;
-                } catch  {
-                    errorMessage = `API Error: ${response.status} - ${errorText}`;
-                }
-                throw new Error(errorMessage);
+                const errorData = await response.json().catch(()=>({}));
+                throw new Error(errorData.message || `HTTP Error: ${response.status}`);
             }
             return await response.json();
         } catch (error) {
-            console.error('Auth API Request failed:', error);
+            console.error('Auth request failed:', error);
             throw error;
         }
     }
-    // Register new user
-    async register(userData) {
-        return this.request('/register', {
-            method: 'POST',
-            body: JSON.stringify(userData)
-        });
-    }
-    // Login user
     async login(credentials) {
-        return this.request('/login', {
-            method: 'POST',
-            body: JSON.stringify(credentials)
-        });
+        try {
+            const response = await this.request('/auth/login', {
+                method: 'POST',
+                body: JSON.stringify(credentials)
+            });
+            this.token = response.token;
+            if ("TURBOPACK compile-time truthy", 1) {
+                localStorage.setItem('auth_token', response.token);
+                localStorage.setItem('user', JSON.stringify(response.user));
+            }
+            return response;
+        } catch (error) {
+            this.logout();
+            throw error;
+        }
     }
-    // Get current user
-    async getCurrentUser() {
-        return this.request('/user');
+    async register(userData) {
+        try {
+            const response = await this.request('/auth/register', {
+                method: 'POST',
+                body: JSON.stringify(userData)
+            });
+            this.token = response.token;
+            if ("TURBOPACK compile-time truthy", 1) {
+                localStorage.setItem('auth_token', response.token);
+                localStorage.setItem('user', JSON.stringify(response.user));
+            }
+            return response;
+        } catch (error) {
+            this.logout();
+            throw error;
+        }
     }
-    // Logout user
     async logout() {
-        const response = await this.request('/logout', {
-            method: 'POST'
-        });
-        this.clearToken();
-        this.clearUser();
-        return response;
+        try {
+            if (this.token) {
+                await this.request('/auth/logout', {
+                    method: 'POST'
+                });
+            }
+        } catch (error) {
+            console.error('Logout request failed:', error);
+        } finally{
+            this.token = null;
+            if ("TURBOPACK compile-time truthy", 1) {
+                localStorage.removeItem('auth_token');
+                localStorage.removeItem('user');
+            }
+        }
     }
-    // Token management
+    async getCurrentUser() {
+        if (!this.token) {
+            return null;
+        }
+        try {
+            const user = await this.request('/auth/user');
+            return user;
+        } catch (error) {
+            console.error('Failed to get current user:', error);
+            this.logout();
+            return null;
+        }
+    }
     getToken() {
-        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
-        ;
-        return localStorage.getItem('auth_token');
+        return this.token;
     }
-    setToken(token) {
-        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
-        ;
-        localStorage.setItem('auth_token', token);
-    }
-    clearToken() {
-        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
-        ;
-        localStorage.removeItem('auth_token');
-    }
-    // User management
     getUserFromStorage() {
         if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
         ;
-        const userStr = localStorage.getItem('auth_user');
-        if (!userStr) return null;
+        const userData = localStorage.getItem('user');
+        if (!userData) return null;
         try {
-            return JSON.parse(userStr);
+            return JSON.parse(userData);
         } catch  {
             return null;
         }
     }
-    setUser(user) {
-        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
-        ;
-        localStorage.setItem('auth_user', JSON.stringify(user));
-    }
-    clearUser() {
-        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
-        ;
-        localStorage.removeItem('auth_user');
-    }
-    // Check if user is authenticated
     isAuthenticated() {
-        return !!(this.getToken() && this.getUserFromStorage());
-    }
-    // Initialize auth state from storage
-    initializeAuth() {
-        const token = this.getToken();
-        const user = this.getUserFromStorage();
-        if (token && user) {
-            return {
-                user,
-                token
-            };
-        }
-        // Clear invalid data
-        this.clearToken();
-        this.clearUser();
-        return {
-            user: null,
-            token: null
-        };
+        return !!this.token;
     }
 }
 const authService = new AuthService();
@@ -176,9 +165,12 @@ function AuthProvider({ children }) {
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "AuthProvider.useEffect": ()=>{
             // При инициализации проверяем авторизацию
-            const authData = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["authService"].initializeAuth();
-            setUser(authData.user);
-            setToken(authData.token);
+            const storedToken = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["authService"].getToken();
+            const storedUser = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["authService"].getUserFromStorage();
+            if (storedToken && storedUser) {
+                setToken(storedToken);
+                setUser(storedUser);
+            }
         }
     }["AuthProvider.useEffect"], []);
     const login = async (credentials)=>{
@@ -186,13 +178,8 @@ function AuthProvider({ children }) {
         setError(null);
         try {
             const response = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["authService"].login(credentials);
-            const user = response.user || null;
-            const token = response.token || null;
-            setUser(user);
-            setToken(token);
-            // Store in localStorage
-            if (token) __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["authService"].setToken(token);
-            if (user) __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["authService"].setUser(user);
+            setUser(response.user || null);
+            setToken(response.token || null);
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Login failed';
             setError(errorMessage);
@@ -206,13 +193,8 @@ function AuthProvider({ children }) {
         setError(null);
         try {
             const response = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["authService"].register(userData);
-            const user = response.user || null;
-            const token = response.token || null;
-            setUser(user);
-            setToken(token);
-            // Store in localStorage
-            if (token) __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["authService"].setToken(token);
-            if (user) __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["authService"].setUser(user);
+            setUser(response.user || null);
+            setToken(response.token || null);
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Registration failed';
             setError(errorMessage);
@@ -221,16 +203,11 @@ function AuthProvider({ children }) {
             setLoading(false);
         }
     };
-    const logout = async ()=>{
-        try {
-            await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["authService"].logout();
-        } catch (err) {
-            console.error('Logout error:', err);
-        } finally{
-            setUser(null);
-            setToken(null);
-            setError(null);
-        }
+    const logout = ()=>{
+        __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["authService"].logout();
+        setUser(null);
+        setToken(null);
+        setError(null);
     };
     const value = {
         user,
@@ -247,7 +224,7 @@ function AuthProvider({ children }) {
         children: children
     }, void 0, false, {
         fileName: "[project]/src/hooks/useAuth.tsx",
-        lineNumber: 118,
+        lineNumber: 103,
         columnNumber: 9
     }, this);
 }
@@ -268,7 +245,7 @@ __turbopack_context__.s([
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/navigation.js [app-client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/index.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$hooks$2f$useAuth$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/hooks/useAuth.tsx [app-client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 "use client";
@@ -277,16 +254,7 @@ var _s = __turbopack_context__.k.signature();
 function Header() {
     _s();
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"])();
-    const [isAuthenticated, setIsAuthenticated] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const [userName, setUserName] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "Header.useEffect": ()=>{
-            const auth = localStorage.getItem('isAuthenticated');
-            const name = localStorage.getItem('userName');
-            setIsAuthenticated(auth === 'true');
-            setUserName(name || 'Гость');
-        }
-    }["Header.useEffect"], []);
+    const { user, isAuthenticated, logout } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$hooks$2f$useAuth$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useAuth"])();
     const handleLogin = ()=>{
         router.push('/login');
     };
@@ -296,12 +264,8 @@ function Header() {
     const handleProfile = ()=>{
         router.push('/profile');
     };
-    const handleLogout = ()=>{
-        localStorage.removeItem('isAuthenticated');
-        localStorage.removeItem('userName');
-        localStorage.removeItem('userEmail');
-        setIsAuthenticated(false);
-        setUserName('Гость');
+    const handleLogout = async ()=>{
+        await logout();
         router.push('/');
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("header", {
@@ -340,12 +304,12 @@ function Header() {
                         children: "Todol"
                     }, void 0, false, {
                         fileName: "[project]/src/components/Header.tsx",
-                        lineNumber: 63,
+                        lineNumber: 52,
                         columnNumber: 21
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/components/Header.tsx",
-                    lineNumber: 57,
+                    lineNumber: 46,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("nav", {
@@ -376,11 +340,11 @@ function Header() {
                                 },
                                 children: [
                                     "👤 ",
-                                    userName.split(' ')[0]
+                                    user?.name?.split(' ')[0] || 'Пользователь'
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/Header.tsx",
-                                lineNumber: 83,
+                                lineNumber: 72,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -404,7 +368,7 @@ function Header() {
                                 children: "Выйти"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/Header.tsx",
-                                lineNumber: 104,
+                                lineNumber: 93,
                                 columnNumber: 29
                             }, this)
                         ]
@@ -431,7 +395,7 @@ function Header() {
                                 children: "Войти"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/Header.tsx",
-                                lineNumber: 128,
+                                lineNumber: 117,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -458,7 +422,7 @@ function Header() {
                                 children: "Регистрация"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/Header.tsx",
-                                lineNumber: 149,
+                                lineNumber: 138,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -484,31 +448,32 @@ function Header() {
                                 children: "👤 Профиль"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/Header.tsx",
-                                lineNumber: 173,
+                                lineNumber: 162,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true)
                 }, void 0, false, {
                     fileName: "[project]/src/components/Header.tsx",
-                    lineNumber: 76,
+                    lineNumber: 65,
                     columnNumber: 17
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/Header.tsx",
-            lineNumber: 48,
+            lineNumber: 37,
             columnNumber: 13
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/components/Header.tsx",
-        lineNumber: 40,
+        lineNumber: 29,
         columnNumber: 9
     }, this);
 }
-_s(Header, "Tjs+7WTWeHwS+UBMejK7JWQkpL8=", false, function() {
+_s(Header, "I5d9v7k+Nf7H6lh/9Xyq8qCO2vA=", false, function() {
     return [
-        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"]
+        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"],
+        __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$hooks$2f$useAuth$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useAuth"]
     ];
 });
 _c = Header;
@@ -727,9 +692,9 @@ __turbopack_context__.s([
     ()=>ClientLayout
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$hooks$2f$useAuth$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/hooks/useAuth.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Header$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/Header.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Footer$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/Footer.tsx [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$hooks$2f$useAuth$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/hooks/useAuth.tsx [app-client] (ecmascript)");
 "use client";
 ;
 ;

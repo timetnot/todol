@@ -8,13 +8,23 @@ __turbopack_context__.s([
     "localStorageService",
     ()=>localStorageService
 ]);
-const API_BASE_URL = 'http://127.0.0.1:8002/api';
+const API_BASE_URL = 'http://localhost:8001/api';
 class ApiService {
+    getAuthToken() {
+        if ("TURBOPACK compile-time truthy", 1) return null;
+        //TURBOPACK unreachable
+        ;
+    }
     async request(endpoint, options = {}) {
         const url = `${API_BASE_URL}${endpoint}`;
+        const token = this.getAuthToken();
         const config = {
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                ...token && {
+                    'Authorization': `Bearer ${token}`
+                },
                 ...options.headers
             },
             ...options
@@ -22,6 +32,11 @@ class ApiService {
         try {
             const response = await fetch(url, config);
             if (!response.ok) {
+                if (response.status === 401) {
+                    // Токен истек, удаляем его и перенаправляем на страницу входа
+                    if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+                    ;
+                }
                 const errorText = await response.text();
                 throw new Error(`API Error: ${response.status} - ${errorText}`);
             }
@@ -38,12 +53,11 @@ class ApiService {
     // Получить все задачи
     async getTodos(sphereId) {
         try {
-            const todos = await this.request('/todos');
-            // Если указан sphereId, фильтруем задачи по сфере
+            let url = '/todos';
+            // Если указан sphereId, фильтруем на клиенте (поскольку API не поддерживает фильтрацию)
+            const todos = await this.request(url);
             if (sphereId) {
-                // В реальном приложении здесь была бы фильтрация по sphereId
-                // Пока возвращаем все задачи для демонстрации
-                return todos;
+                return todos.filter((todo)=>todo.sphere_id === sphereId);
             }
             return todos;
         } catch (error) {
@@ -167,7 +181,12 @@ function useTodos({ sphereId, useApi = true }) {
     const createTodo = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(async (todoData)=>{
         try {
             if (useApi) {
-                const newTodo = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["apiService"].createTodo(todoData);
+                // Добавляем sphere_id к данным задачи
+                const todoWithSphere = {
+                    ...todoData,
+                    sphere_id: sphereId
+                };
+                const newTodo = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["apiService"].createTodo(todoWithSphere);
                 setTodos((prev)=>[
                         newTodo,
                         ...prev
@@ -178,13 +197,18 @@ function useTodos({ sphereId, useApi = true }) {
                     ...todos
                 ], sphereId);
                 __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["localStorageService"].saveTodos(sphereId, localTodos);
+                // Триггер для обновления статистики в dashboard
+                window.dispatchEvent(new Event('taskUpdated'));
                 return newTodo;
             } else {
                 // Для localStorage используем существующую логику
                 const newId = Date.now();
                 const newTodo = {
                     id: newId,
-                    ...todoData,
+                    title: todoData.title,
+                    description: todoData.description,
+                    completed: todoData.completed || false,
+                    sphere_id: sphereId,
                     created_at: new Date().toISOString(),
                     updated_at: new Date().toISOString()
                 };
@@ -197,6 +221,8 @@ function useTodos({ sphereId, useApi = true }) {
                     ...todos
                 ], sphereId);
                 __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["localStorageService"].saveTodos(sphereId, localTodos);
+                // Триггер для обновления статистики в dashboard
+                window.dispatchEvent(new Event('taskUpdated'));
                 return newTodo;
             }
         } catch (err) {
@@ -219,6 +245,8 @@ function useTodos({ sphereId, useApi = true }) {
                 const updatedTodos = todos.map((todo)=>todo.id === id ? updatedTodo : todo);
                 const localTodos = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["localStorageService"].apiToLocalStorage(updatedTodos, sphereId);
                 __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["localStorageService"].saveTodos(sphereId, localTodos);
+                // Триггер для обновления статистики в dashboard
+                window.dispatchEvent(new Event('taskUpdated'));
                 return updatedTodo;
             } else {
                 const updatedTodo = {
@@ -230,6 +258,8 @@ function useTodos({ sphereId, useApi = true }) {
                 const updatedTodos = todos.map((todo)=>todo.id === id ? updatedTodo : todo);
                 const localTodos = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["localStorageService"].apiToLocalStorage(updatedTodos, sphereId);
                 __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["localStorageService"].saveTodos(sphereId, localTodos);
+                // Триггер для обновления статистики в dashboard
+                window.dispatchEvent(new Event('taskUpdated'));
                 return updatedTodo;
             }
         } catch (err) {
@@ -252,11 +282,15 @@ function useTodos({ sphereId, useApi = true }) {
                 const updatedTodos = todos.filter((todo)=>todo.id !== id);
                 const localTodos = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["localStorageService"].apiToLocalStorage(updatedTodos, sphereId);
                 __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["localStorageService"].saveTodos(sphereId, localTodos);
+                // Триггер для обновления статистики в dashboard
+                window.dispatchEvent(new Event('taskUpdated'));
             } else {
                 setTodos((prev)=>prev.filter((todo)=>todo.id !== id));
                 const updatedTodos = todos.filter((todo)=>todo.id !== id);
                 const localTodos = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["localStorageService"].apiToLocalStorage(updatedTodos, sphereId);
                 __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["localStorageService"].saveTodos(sphereId, localTodos);
+                // Триггер для обновления статистики в dashboard
+                window.dispatchEvent(new Event('taskUpdated'));
             }
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to delete todo';

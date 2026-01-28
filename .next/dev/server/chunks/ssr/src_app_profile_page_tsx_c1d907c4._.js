@@ -10,79 +10,207 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/styled-jsx/style.js [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react.js [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/navigation.js [app-ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$hooks$2f$useAuth$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/hooks/useAuth.tsx [app-ssr] (ecmascript)");
 "use client";
 ;
 ;
 ;
 ;
+;
+const lifeSpheres = [
+    {
+        id: 1,
+        title: "Отношения",
+        icon: "💕",
+        color: "#ec4899",
+        subtitle: "Тепло и забота"
+    },
+    {
+        id: 2,
+        title: "Семья",
+        icon: "👨‍👩‍👧",
+        color: "#10b981",
+        subtitle: "Семейное счастье"
+    },
+    {
+        id: 3,
+        title: "Карьера",
+        icon: "💼",
+        color: "#f59e0b",
+        subtitle: "Профессиональный рост"
+    },
+    {
+        id: 4,
+        title: "Финансы",
+        icon: "💰",
+        color: "#8b5cf6",
+        subtitle: "Финансовая свобода"
+    },
+    {
+        id: 5,
+        title: "Питание",
+        icon: "🥗",
+        color: "#f97316",
+        subtitle: "Здоровое питание"
+    },
+    {
+        id: 6,
+        title: "Спорт",
+        icon: "🏋️",
+        color: "#ef4444",
+        subtitle: "Физическая форма"
+    },
+    {
+        id: 7,
+        title: "Здоровье",
+        icon: "🩺",
+        color: "#3b82f6",
+        subtitle: "Полные силы"
+    },
+    {
+        id: 8,
+        title: "Отдых",
+        icon: "😌",
+        color: "#06b6d4",
+        subtitle: "Восстановление сил"
+    }
+];
 function Profile() {
-    const [user, setUser] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
     const [isEditing, setIsEditing] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
     const [formData, setFormData] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])({
         name: '',
         email: '',
         bio: ''
     });
+    const [taskStats, setTaskStats] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])({
+        totalTasks: 0,
+        completedTasks: 0,
+        totalSubtasks: 0,
+        completedSubtasks: 0,
+        sphereStats: {}
+    });
+    const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(true);
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRouter"])();
-    const getTaskStats = ()=>{
-        const stats = {
-            totalTasks: 0,
-            completedTasks: 0,
-            totalSubtasks: 0,
-            completedSubtasks: 0,
-            sphereStats: {}
-        };
-        for(let i = 1; i <= 8; i++){
-            const tasks = JSON.parse(localStorage.getItem(`tasks_sphere_${i}`) || '[]');
-            const sphereTasks = tasks.length;
-            const sphereCompleted = tasks.filter((task)=>task.completed).length;
-            stats.totalTasks += sphereTasks;
-            stats.completedTasks += sphereCompleted;
-            const subtasks = tasks.reduce((acc, task)=>acc + (task.subtasks?.length || 0), 0);
-            const completedSubtasks = tasks.reduce((acc, task)=>acc + (task.subtasks?.filter((st)=>st.completed).length || 0), 0);
-            stats.totalSubtasks += subtasks;
-            stats.completedSubtasks += completedSubtasks;
-            stats.sphereStats[i] = {
-                total: sphereTasks,
-                completed: sphereCompleted,
-                percentage: sphereTasks > 0 ? Math.round(sphereCompleted / sphereTasks * 100) : 0
-            };
+    const { user, logout, isAuthenticated, token } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$hooks$2f$useAuth$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useAuth"])();
+    // Загружаем статистику задач из API
+    const loadTaskStats = async ()=>{
+        if (!token) return;
+        try {
+            const response = await fetch('http://localhost:8002/api/todos', {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (response.ok) {
+                const todos = await response.json();
+                // Считаем статистику для каждой сферы
+                const stats = {
+                    totalTasks: 0,
+                    completedTasks: 0,
+                    totalSubtasks: 0,
+                    completedSubtasks: 0,
+                    sphereStats: {}
+                };
+                // Инициализируем все сферы нулевыми значениями
+                lifeSpheres.forEach((sphere)=>{
+                    stats.sphereStats[sphere.id] = {
+                        total: 0,
+                        completed: 0,
+                        percentage: 0
+                    };
+                });
+                // Считаем задачи по сферам
+                todos.forEach((todo)=>{
+                    const sphereId = todo.sphere_id || 1;
+                    if (stats.sphereStats[sphereId]) {
+                        stats.sphereStats[sphereId].total++;
+                        if (todo.completed) {
+                            stats.sphereStats[sphereId].completed++;
+                        }
+                    }
+                    stats.totalTasks++;
+                    if (todo.completed) {
+                        stats.completedTasks++;
+                    }
+                    // Считаем подзадачи (description как подзадача)
+                    if (todo.description) {
+                        stats.totalSubtasks++;
+                        if (todo.completed) {
+                            stats.completedSubtasks++;
+                        }
+                    }
+                });
+                // Вычисляем проценты
+                Object.keys(stats.sphereStats).forEach((sphereId)=>{
+                    const sphere = stats.sphereStats[sphereId];
+                    sphere.percentage = sphere.total > 0 ? Math.round(sphere.completed / sphere.total * 100) : 0;
+                });
+                setTaskStats(stats);
+            }
+        } catch (error) {
+            console.error('Failed to load task stats:', error);
+        } finally{
+            setLoading(false);
         }
-        return stats;
     };
-    const taskStats = getTaskStats();
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
-        const auth = localStorage.getItem('isAuthenticated');
-        const userData = localStorage.getItem('user');
-        if (auth !== 'true' || !userData) {
+        if (!isAuthenticated || !user) {
             router.push('/login');
             return;
         }
-        const parsedUser = JSON.parse(userData);
-        setUser(parsedUser);
         setFormData({
-            name: parsedUser.name || '',
-            email: parsedUser.email || '',
-            bio: parsedUser.bio || ''
+            name: user.name || '',
+            email: user.email || '',
+            bio: user.bio || ''
         });
+        loadTaskStats();
     }, [
+        isAuthenticated,
+        user,
+        router
+    ]);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        if (!isAuthenticated || !user) {
+            router.push('/login');
+            return;
+        }
+        setFormData({
+            name: user.name || '',
+            email: user.email || '',
+            bio: user.bio || ''
+        });
+        loadTaskStats();
+        // Добавляем слушатель для обновления статистики в реальном времени
+        const handleStorageChange = ()=>{
+            loadTaskStats();
+        };
+        window.addEventListener('storage', handleStorageChange);
+        window.addEventListener('taskUpdated', handleStorageChange);
+        // Также добавляем периодическое обновление
+        const interval = setInterval(loadTaskStats, 5000);
+        return ()=>{
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('taskUpdated', handleStorageChange);
+            clearInterval(interval);
+        };
+    }, [
+        isAuthenticated,
+        user,
+        token,
         router
     ]);
     const handleSave = ()=>{
-        const updatedUser = {
-            ...user,
-            ...formData
-        };
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-        setUser(updatedUser);
+        // В реальном приложении здесь был бы запрос к API для обновления профиля
+        // Пока просто обновляем локальное состояние
         setIsEditing(false);
     };
-    const handleLogout = ()=>{
-        localStorage.removeItem('isAuthenticated');
-        localStorage.removeItem('user');
+    const handleLogout = async ()=>{
+        await logout();
         router.push('/login');
     };
-    if (!user) {
+    // Показываем загрузку, если проверяем авторизацию или загружаем статистику
+    if (!isAuthenticated || !user || loading) {
         return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
             style: {
                 minHeight: '100vh',
@@ -96,12 +224,12 @@ function Profile() {
                 children: "Загрузка..."
             }, void 0, false, {
                 fileName: "[project]/src/app/profile/page.tsx",
-                lineNumber: 97,
+                lineNumber: 173,
                 columnNumber: 17
             }, this)
         }, void 0, false, {
             fileName: "[project]/src/app/profile/page.tsx",
-            lineNumber: 89,
+            lineNumber: 165,
             columnNumber: 13
         }, this);
     }
@@ -114,7 +242,7 @@ function Profile() {
         },
         className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
             [
-                "4691ee0faf29474d",
+                "9b9655edfa04826f",
                 [
                     Array.from({
                         length: 30
@@ -139,7 +267,7 @@ function Profile() {
                 },
                 className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                     [
-                        "4691ee0faf29474d",
+                        "9b9655edfa04826f",
                         [
                             Array.from({
                                 length: 30
@@ -179,7 +307,7 @@ function Profile() {
                         },
                         className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                             [
-                                "4691ee0faf29474d",
+                                "9b9655edfa04826f",
                                 [
                                     Array.from({
                                         length: 30
@@ -196,12 +324,12 @@ function Profile() {
                         ])
                     }, i1, false, {
                         fileName: "[project]/src/app/profile/page.tsx",
-                        lineNumber: 117,
+                        lineNumber: 193,
                         columnNumber: 21
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/src/app/profile/page.tsx",
-                lineNumber: 110,
+                lineNumber: 186,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -213,7 +341,7 @@ function Profile() {
                 },
                 className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                     [
-                        "4691ee0faf29474d",
+                        "9b9655edfa04826f",
                         [
                             Array.from({
                                 length: 30
@@ -236,7 +364,7 @@ function Profile() {
                         },
                         className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                             [
-                                "4691ee0faf29474d",
+                                "9b9655edfa04826f",
                                 [
                                     Array.from({
                                         length: 30
@@ -265,7 +393,7 @@ function Profile() {
                                 },
                                 className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                     [
-                                        "4691ee0faf29474d",
+                                        "9b9655edfa04826f",
                                         [
                                             Array.from({
                                                 length: 30
@@ -283,7 +411,7 @@ function Profile() {
                                 children: "Профиль"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/profile/page.tsx",
-                                lineNumber: 146,
+                                lineNumber: 222,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -295,7 +423,7 @@ function Profile() {
                                 },
                                 className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                     [
-                                        "4691ee0faf29474d",
+                                        "9b9655edfa04826f",
                                         [
                                             Array.from({
                                                 length: 30
@@ -313,13 +441,13 @@ function Profile() {
                                 children: "Управление вашим аккаунтом"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/profile/page.tsx",
-                                lineNumber: 158,
+                                lineNumber: 234,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/profile/page.tsx",
-                        lineNumber: 142,
+                        lineNumber: 218,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -332,7 +460,7 @@ function Profile() {
                         },
                         className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                             [
-                                "4691ee0faf29474d",
+                                "9b9655edfa04826f",
                                 [
                                     Array.from({
                                         length: 30
@@ -350,7 +478,7 @@ function Profile() {
                         children: isEditing ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                 [
-                                    "4691ee0faf29474d",
+                                    "9b9655edfa04826f",
                                     [
                                         Array.from({
                                             length: 30
@@ -373,7 +501,7 @@ function Profile() {
                                     },
                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                         [
-                                            "4691ee0faf29474d",
+                                            "9b9655edfa04826f",
                                             [
                                                 Array.from({
                                                     length: 30
@@ -402,7 +530,7 @@ function Profile() {
                                         },
                                         className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                             [
-                                                "4691ee0faf29474d",
+                                                "9b9655edfa04826f",
                                                 [
                                                     Array.from({
                                                         length: 30
@@ -420,12 +548,12 @@ function Profile() {
                                         children: "👤"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/profile/page.tsx",
-                                        lineNumber: 183,
+                                        lineNumber: 259,
                                         columnNumber: 33
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/profile/page.tsx",
-                                    lineNumber: 179,
+                                    lineNumber: 255,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -434,7 +562,7 @@ function Profile() {
                                     },
                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                         [
-                                            "4691ee0faf29474d",
+                                            "9b9655edfa04826f",
                                             [
                                                 Array.from({
                                                     length: 30
@@ -456,7 +584,7 @@ function Profile() {
                                             },
                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                 [
-                                                    "4691ee0faf29474d",
+                                                    "9b9655edfa04826f",
                                                     [
                                                         Array.from({
                                                             length: 30
@@ -482,7 +610,7 @@ function Profile() {
                                                     },
                                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                         [
-                                                            "4691ee0faf29474d",
+                                                            "9b9655edfa04826f",
                                                             [
                                                                 Array.from({
                                                                     length: 30
@@ -500,7 +628,7 @@ function Profile() {
                                                     children: "Имя"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/profile/page.tsx",
-                                                    lineNumber: 201,
+                                                    lineNumber: 277,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -533,7 +661,7 @@ function Profile() {
                                                     },
                                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                         [
-                                                            "4691ee0faf29474d",
+                                                            "9b9655edfa04826f",
                                                             [
                                                                 Array.from({
                                                                     length: 30
@@ -550,13 +678,13 @@ function Profile() {
                                                     ])
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/profile/page.tsx",
-                                                    lineNumber: 210,
+                                                    lineNumber: 286,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/profile/page.tsx",
-                                            lineNumber: 200,
+                                            lineNumber: 276,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -565,7 +693,7 @@ function Profile() {
                                             },
                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                 [
-                                                    "4691ee0faf29474d",
+                                                    "9b9655edfa04826f",
                                                     [
                                                         Array.from({
                                                             length: 30
@@ -591,7 +719,7 @@ function Profile() {
                                                     },
                                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                         [
-                                                            "4691ee0faf29474d",
+                                                            "9b9655edfa04826f",
                                                             [
                                                                 Array.from({
                                                                     length: 30
@@ -609,7 +737,7 @@ function Profile() {
                                                     children: "Email"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/profile/page.tsx",
-                                                    lineNumber: 239,
+                                                    lineNumber: 315,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -642,7 +770,7 @@ function Profile() {
                                                     },
                                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                         [
-                                                            "4691ee0faf29474d",
+                                                            "9b9655edfa04826f",
                                                             [
                                                                 Array.from({
                                                                     length: 30
@@ -659,13 +787,13 @@ function Profile() {
                                                     ])
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/profile/page.tsx",
-                                                    lineNumber: 248,
+                                                    lineNumber: 324,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/profile/page.tsx",
-                                            lineNumber: 238,
+                                            lineNumber: 314,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -674,7 +802,7 @@ function Profile() {
                                             },
                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                 [
-                                                    "4691ee0faf29474d",
+                                                    "9b9655edfa04826f",
                                                     [
                                                         Array.from({
                                                             length: 30
@@ -700,7 +828,7 @@ function Profile() {
                                                     },
                                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                         [
-                                                            "4691ee0faf29474d",
+                                                            "9b9655edfa04826f",
                                                             [
                                                                 Array.from({
                                                                     length: 30
@@ -718,7 +846,7 @@ function Profile() {
                                                     children: "О себе"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/profile/page.tsx",
-                                                    lineNumber: 277,
+                                                    lineNumber: 353,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
@@ -752,7 +880,7 @@ function Profile() {
                                                     },
                                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                         [
-                                                            "4691ee0faf29474d",
+                                                            "9b9655edfa04826f",
                                                             [
                                                                 Array.from({
                                                                     length: 30
@@ -769,19 +897,19 @@ function Profile() {
                                                     ])
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/profile/page.tsx",
-                                                    lineNumber: 286,
+                                                    lineNumber: 362,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/profile/page.tsx",
-                                            lineNumber: 276,
+                                            lineNumber: 352,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/profile/page.tsx",
-                                    lineNumber: 199,
+                                    lineNumber: 275,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -791,7 +919,7 @@ function Profile() {
                                     },
                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                         [
-                                            "4691ee0faf29474d",
+                                            "9b9655edfa04826f",
                                             [
                                                 Array.from({
                                                     length: 30
@@ -832,7 +960,7 @@ function Profile() {
                                             },
                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                 [
-                                                    "4691ee0faf29474d",
+                                                    "9b9655edfa04826f",
                                                     [
                                                         Array.from({
                                                             length: 30
@@ -850,7 +978,7 @@ function Profile() {
                                             children: "Сохранить"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/profile/page.tsx",
-                                            lineNumber: 321,
+                                            lineNumber: 397,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -875,7 +1003,7 @@ function Profile() {
                                             },
                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                 [
-                                                    "4691ee0faf29474d",
+                                                    "9b9655edfa04826f",
                                                     [
                                                         Array.from({
                                                             length: 30
@@ -893,24 +1021,24 @@ function Profile() {
                                             children: "Отмена"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/profile/page.tsx",
-                                            lineNumber: 347,
+                                            lineNumber: 423,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/profile/page.tsx",
-                                    lineNumber: 317,
+                                    lineNumber: 393,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/profile/page.tsx",
-                            lineNumber: 177,
+                            lineNumber: 253,
                             columnNumber: 25
                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                 [
-                                    "4691ee0faf29474d",
+                                    "9b9655edfa04826f",
                                     [
                                         Array.from({
                                             length: 30
@@ -933,7 +1061,7 @@ function Profile() {
                                     },
                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                         [
-                                            "4691ee0faf29474d",
+                                            "9b9655edfa04826f",
                                             [
                                                 Array.from({
                                                     length: 30
@@ -963,7 +1091,7 @@ function Profile() {
                                             },
                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                 [
-                                                    "4691ee0faf29474d",
+                                                    "9b9655edfa04826f",
                                                     [
                                                         Array.from({
                                                             length: 30
@@ -981,7 +1109,7 @@ function Profile() {
                                             children: "👤"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/profile/page.tsx",
-                                            lineNumber: 379,
+                                            lineNumber: 455,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
@@ -993,7 +1121,7 @@ function Profile() {
                                             },
                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                 [
-                                                    "4691ee0faf29474d",
+                                                    "9b9655edfa04826f",
                                                     [
                                                         Array.from({
                                                             length: 30
@@ -1011,7 +1139,7 @@ function Profile() {
                                             children: user.name
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/profile/page.tsx",
-                                            lineNumber: 392,
+                                            lineNumber: 468,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1022,7 +1150,7 @@ function Profile() {
                                             },
                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                 [
-                                                    "4691ee0faf29474d",
+                                                    "9b9655edfa04826f",
                                                     [
                                                         Array.from({
                                                             length: 30
@@ -1040,13 +1168,13 @@ function Profile() {
                                             children: user.email
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/profile/page.tsx",
-                                            lineNumber: 400,
+                                            lineNumber: 476,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/profile/page.tsx",
-                                    lineNumber: 375,
+                                    lineNumber: 451,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1055,7 +1183,7 @@ function Profile() {
                                     },
                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                         [
-                                            "4691ee0faf29474d",
+                                            "9b9655edfa04826f",
                                             [
                                                 Array.from({
                                                     length: 30
@@ -1081,7 +1209,7 @@ function Profile() {
                                             },
                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                 [
-                                                    "4691ee0faf29474d",
+                                                    "9b9655edfa04826f",
                                                     [
                                                         Array.from({
                                                             length: 30
@@ -1108,7 +1236,7 @@ function Profile() {
                                                     },
                                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                         [
-                                                            "4691ee0faf29474d",
+                                                            "9b9655edfa04826f",
                                                             [
                                                                 Array.from({
                                                                     length: 30
@@ -1126,7 +1254,7 @@ function Profile() {
                                                     children: "Общий прогресс"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/profile/page.tsx",
-                                                    lineNumber: 418,
+                                                    lineNumber: 494,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1138,7 +1266,7 @@ function Profile() {
                                                     },
                                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                         [
-                                                            "4691ee0faf29474d",
+                                                            "9b9655edfa04826f",
                                                             [
                                                                 Array.from({
                                                                     length: 30
@@ -1160,7 +1288,7 @@ function Profile() {
                                                             },
                                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                                 [
-                                                                    "4691ee0faf29474d",
+                                                                    "9b9655edfa04826f",
                                                                     [
                                                                         Array.from({
                                                                             length: 30
@@ -1185,7 +1313,7 @@ function Profile() {
                                                                     },
                                                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                                         [
-                                                                            "4691ee0faf29474d",
+                                                                            "9b9655edfa04826f",
                                                                             [
                                                                                 Array.from({
                                                                                     length: 30
@@ -1203,7 +1331,7 @@ function Profile() {
                                                                     children: taskStats.totalTasks
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/profile/page.tsx",
-                                                                    lineNumber: 437,
+                                                                    lineNumber: 513,
                                                                     columnNumber: 45
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1213,7 +1341,7 @@ function Profile() {
                                                                     },
                                                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                                         [
-                                                                            "4691ee0faf29474d",
+                                                                            "9b9655edfa04826f",
                                                                             [
                                                                                 Array.from({
                                                                                     length: 30
@@ -1231,13 +1359,13 @@ function Profile() {
                                                                     children: "Всего задач"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/profile/page.tsx",
-                                                                    lineNumber: 445,
+                                                                    lineNumber: 521,
                                                                     columnNumber: 45
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/profile/page.tsx",
-                                                            lineNumber: 436,
+                                                            lineNumber: 512,
                                                             columnNumber: 41
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1246,7 +1374,7 @@ function Profile() {
                                                             },
                                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                                 [
-                                                                    "4691ee0faf29474d",
+                                                                    "9b9655edfa04826f",
                                                                     [
                                                                         Array.from({
                                                                             length: 30
@@ -1271,7 +1399,7 @@ function Profile() {
                                                                     },
                                                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                                         [
-                                                                            "4691ee0faf29474d",
+                                                                            "9b9655edfa04826f",
                                                                             [
                                                                                 Array.from({
                                                                                     length: 30
@@ -1289,7 +1417,7 @@ function Profile() {
                                                                     children: taskStats.completedTasks
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/profile/page.tsx",
-                                                                    lineNumber: 453,
+                                                                    lineNumber: 529,
                                                                     columnNumber: 45
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1299,7 +1427,7 @@ function Profile() {
                                                                     },
                                                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                                         [
-                                                                            "4691ee0faf29474d",
+                                                                            "9b9655edfa04826f",
                                                                             [
                                                                                 Array.from({
                                                                                     length: 30
@@ -1317,19 +1445,19 @@ function Profile() {
                                                                     children: "Выполнено"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/profile/page.tsx",
-                                                                    lineNumber: 461,
+                                                                    lineNumber: 537,
                                                                     columnNumber: 45
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/profile/page.tsx",
-                                                            lineNumber: 452,
+                                                            lineNumber: 528,
                                                             columnNumber: 41
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/profile/page.tsx",
-                                                    lineNumber: 430,
+                                                    lineNumber: 506,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1338,7 +1466,7 @@ function Profile() {
                                                     },
                                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                         [
-                                                            "4691ee0faf29474d",
+                                                            "9b9655edfa04826f",
                                                             [
                                                                 Array.from({
                                                                     length: 30
@@ -1363,7 +1491,7 @@ function Profile() {
                                                             },
                                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                                 [
-                                                                    "4691ee0faf29474d",
+                                                                    "9b9655edfa04826f",
                                                                     [
                                                                         Array.from({
                                                                             length: 30
@@ -1387,7 +1515,7 @@ function Profile() {
                                                                     },
                                                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                                         [
-                                                                            "4691ee0faf29474d",
+                                                                            "9b9655edfa04826f",
                                                                             [
                                                                                 Array.from({
                                                                                     length: 30
@@ -1405,7 +1533,7 @@ function Profile() {
                                                                     children: "Прогресс выполнения"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/profile/page.tsx",
-                                                                    lineNumber: 478,
+                                                                    lineNumber: 554,
                                                                     columnNumber: 45
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1416,7 +1544,7 @@ function Profile() {
                                                                     },
                                                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                                         [
-                                                                            "4691ee0faf29474d",
+                                                                            "9b9655edfa04826f",
                                                                             [
                                                                                 Array.from({
                                                                                     length: 30
@@ -1437,13 +1565,13 @@ function Profile() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/app/profile/page.tsx",
-                                                                    lineNumber: 485,
+                                                                    lineNumber: 561,
                                                                     columnNumber: 45
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/profile/page.tsx",
-                                                            lineNumber: 472,
+                                                            lineNumber: 548,
                                                             columnNumber: 41
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1456,7 +1584,7 @@ function Profile() {
                                                             },
                                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                                 [
-                                                                    "4691ee0faf29474d",
+                                                                    "9b9655edfa04826f",
                                                                     [
                                                                         Array.from({
                                                                             length: 30
@@ -1483,7 +1611,7 @@ function Profile() {
                                                                 },
                                                                 className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                                     [
-                                                                        "4691ee0faf29474d",
+                                                                        "9b9655edfa04826f",
                                                                         [
                                                                             Array.from({
                                                                                 length: 30
@@ -1500,24 +1628,24 @@ function Profile() {
                                                                 ])
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/profile/page.tsx",
-                                                                lineNumber: 500,
+                                                                lineNumber: 576,
                                                                 columnNumber: 45
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/profile/page.tsx",
-                                                            lineNumber: 493,
+                                                            lineNumber: 569,
                                                             columnNumber: 41
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/profile/page.tsx",
-                                                    lineNumber: 471,
+                                                    lineNumber: 547,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/profile/page.tsx",
-                                            lineNumber: 411,
+                                            lineNumber: 487,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1529,7 +1657,7 @@ function Profile() {
                                             },
                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                 [
-                                                    "4691ee0faf29474d",
+                                                    "9b9655edfa04826f",
                                                     [
                                                         Array.from({
                                                             length: 30
@@ -1556,7 +1684,7 @@ function Profile() {
                                                     },
                                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                         [
-                                                            "4691ee0faf29474d",
+                                                            "9b9655edfa04826f",
                                                             [
                                                                 Array.from({
                                                                     length: 30
@@ -1574,7 +1702,7 @@ function Profile() {
                                                     children: "Прогресс по сферам"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/profile/page.tsx",
-                                                    lineNumber: 522,
+                                                    lineNumber: 598,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1585,7 +1713,7 @@ function Profile() {
                                                     },
                                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                         [
-                                                            "4691ee0faf29474d",
+                                                            "9b9655edfa04826f",
                                                             [
                                                                 Array.from({
                                                                     length: 30
@@ -1600,26 +1728,11 @@ function Profile() {
                                                             ]
                                                         ]
                                                     ]),
-                                                    children: Object.entries(taskStats.sphereStats).map(([sphereId, stats])=>{
-                                                        const sphereNames = {
-                                                            '1': 'Отношения',
-                                                            '2': 'Семья',
-                                                            '3': 'Карьера',
-                                                            '4': 'Финансы',
-                                                            '5': 'Питание',
-                                                            '6': 'Спорт',
-                                                            '7': 'Здоровье',
-                                                            '8': 'Отдых'
-                                                        };
-                                                        const sphereColors = {
-                                                            '1': '#ec4899',
-                                                            '2': '#f97316',
-                                                            '3': '#3b82f6',
-                                                            '4': '#22c55e',
-                                                            '5': '#f59e0b',
-                                                            '6': '#ef4444',
-                                                            '7': '#a855f7',
-                                                            '8': '#06b6d4'
+                                                    children: lifeSpheres.map((sphere)=>{
+                                                        const stats = taskStats.sphereStats[sphere.id] || {
+                                                            total: 0,
+                                                            completed: 0,
+                                                            percentage: 0
                                                         };
                                                         return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                             style: {
@@ -1630,7 +1743,7 @@ function Profile() {
                                                             },
                                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                                 [
-                                                                    "4691ee0faf29474d",
+                                                                    "9b9655edfa04826f",
                                                                     [
                                                                         Array.from({
                                                                             length: 30
@@ -1655,7 +1768,7 @@ function Profile() {
                                                                     },
                                                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                                         [
-                                                                            "4691ee0faf29474d",
+                                                                            "9b9655edfa04826f",
                                                                             [
                                                                                 Array.from({
                                                                                     length: 30
@@ -1671,15 +1784,15 @@ function Profile() {
                                                                         ]
                                                                     ]),
                                                                     children: [
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                             style: {
-                                                                                fontSize: '0.85rem',
-                                                                                color: '#e2e8f0',
-                                                                                fontWeight: 500
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                gap: '0.5rem'
                                                                             },
                                                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                                                 [
-                                                                                    "4691ee0faf29474d",
+                                                                                    "9b9655edfa04826f",
                                                                                     [
                                                                                         Array.from({
                                                                                             length: 30
@@ -1694,21 +1807,78 @@ function Profile() {
                                                                                     ]
                                                                                 ]
                                                                             ]),
-                                                                            children: sphereNames[sphereId]
-                                                                        }, void 0, false, {
+                                                                            children: [
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                    style: {
+                                                                                        fontSize: '1.2rem'
+                                                                                    },
+                                                                                    className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
+                                                                                        [
+                                                                                            "9b9655edfa04826f",
+                                                                                            [
+                                                                                                Array.from({
+                                                                                                    length: 30
+                                                                                                }, (_, i)=>`
+                    @keyframes fall-${i} {
+                        0% { transform: translateY(-10vh); opacity: 0; }
+                        10% { opacity: 0.3; }
+                        90% { opacity: 0.3; }
+                        100% { transform: translateY(110vh); opacity: 0; }
+                    }
+                `).join('')
+                                                                                            ]
+                                                                                        ]
+                                                                                    ]),
+                                                                                    children: sphere.icon
+                                                                                }, void 0, false, {
+                                                                                    fileName: "[project]/src/app/profile/page.tsx",
+                                                                                    lineNumber: 634,
+                                                                                    columnNumber: 61
+                                                                                }, this),
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                    style: {
+                                                                                        fontSize: '0.85rem',
+                                                                                        color: '#e2e8f0',
+                                                                                        fontWeight: 500
+                                                                                    },
+                                                                                    className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
+                                                                                        [
+                                                                                            "9b9655edfa04826f",
+                                                                                            [
+                                                                                                Array.from({
+                                                                                                    length: 30
+                                                                                                }, (_, i)=>`
+                    @keyframes fall-${i} {
+                        0% { transform: translateY(-10vh); opacity: 0; }
+                        10% { opacity: 0.3; }
+                        90% { opacity: 0.3; }
+                        100% { transform: translateY(110vh); opacity: 0; }
+                    }
+                `).join('')
+                                                                                            ]
+                                                                                        ]
+                                                                                    ]),
+                                                                                    children: sphere.title
+                                                                                }, void 0, false, {
+                                                                                    fileName: "[project]/src/app/profile/page.tsx",
+                                                                                    lineNumber: 639,
+                                                                                    columnNumber: 61
+                                                                                }, this)
+                                                                            ]
+                                                                        }, void 0, true, {
                                                                             fileName: "[project]/src/app/profile/page.tsx",
-                                                                            lineNumber: 574,
+                                                                            lineNumber: 629,
                                                                             columnNumber: 57
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                             style: {
                                                                                 fontSize: '0.8rem',
                                                                                 fontWeight: 700,
-                                                                                color: sphereColors[sphereId]
+                                                                                color: sphere.color
                                                                             },
                                                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                                                 [
-                                                                                    "4691ee0faf29474d",
+                                                                                    "9b9655edfa04826f",
                                                                                     [
                                                                                         Array.from({
                                                                                             length: 30
@@ -1729,13 +1899,13 @@ function Profile() {
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/src/app/profile/page.tsx",
-                                                                            lineNumber: 581,
+                                                                            lineNumber: 647,
                                                                             columnNumber: 57
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/app/profile/page.tsx",
-                                                                    lineNumber: 568,
+                                                                    lineNumber: 623,
                                                                     columnNumber: 53
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1747,7 +1917,7 @@ function Profile() {
                                                                     },
                                                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                                         [
-                                                                            "4691ee0faf29474d",
+                                                                            "9b9655edfa04826f",
                                                                             [
                                                                                 Array.from({
                                                                                     length: 30
@@ -1766,13 +1936,13 @@ function Profile() {
                                                                         style: {
                                                                             height: '100%',
                                                                             borderRadius: 'inherit',
-                                                                            background: sphereColors[sphereId],
+                                                                            background: sphere.color,
                                                                             width: `${stats.percentage}%`,
                                                                             transition: 'width 1s cubic-bezier(0.23, 1, 0.32, 1)'
                                                                         },
                                                                         className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                                             [
-                                                                                "4691ee0faf29474d",
+                                                                                "9b9655edfa04826f",
                                                                                 [
                                                                                     Array.from({
                                                                                         length: 30
@@ -1789,12 +1959,12 @@ function Profile() {
                                                                         ])
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/profile/page.tsx",
-                                                                        lineNumber: 595,
+                                                                        lineNumber: 661,
                                                                         columnNumber: 57
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/profile/page.tsx",
-                                                                    lineNumber: 589,
+                                                                    lineNumber: 655,
                                                                     columnNumber: 53
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1805,7 +1975,7 @@ function Profile() {
                                                                     },
                                                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                                         [
-                                                                            "4691ee0faf29474d",
+                                                                            "9b9655edfa04826f",
                                                                             [
                                                                                 Array.from({
                                                                                     length: 30
@@ -1828,31 +1998,31 @@ function Profile() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/app/profile/page.tsx",
-                                                                    lineNumber: 605,
+                                                                    lineNumber: 671,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             ]
-                                                        }, sphereId, true, {
+                                                        }, sphere.id, true, {
                                                             fileName: "[project]/src/app/profile/page.tsx",
-                                                            lineNumber: 562,
+                                                            lineNumber: 617,
                                                             columnNumber: 49
                                                         }, this);
                                                     })
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/profile/page.tsx",
-                                                    lineNumber: 533,
+                                                    lineNumber: 609,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/profile/page.tsx",
-                                            lineNumber: 516,
+                                            lineNumber: 592,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/profile/page.tsx",
-                                    lineNumber: 410,
+                                    lineNumber: 486,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1863,7 +2033,7 @@ function Profile() {
                                     },
                                     className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                         [
-                                            "4691ee0faf29474d",
+                                            "9b9655edfa04826f",
                                             [
                                                 Array.from({
                                                     length: 30
@@ -1904,7 +2074,7 @@ function Profile() {
                                             },
                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                 [
-                                                    "4691ee0faf29474d",
+                                                    "9b9655edfa04826f",
                                                     [
                                                         Array.from({
                                                             length: 30
@@ -1922,7 +2092,7 @@ function Profile() {
                                             children: "📊 Перейти к дашборду"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/profile/page.tsx",
-                                            lineNumber: 625,
+                                            lineNumber: 691,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1947,7 +2117,7 @@ function Profile() {
                                             },
                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                 [
-                                                    "4691ee0faf29474d",
+                                                    "9b9655edfa04826f",
                                                     [
                                                         Array.from({
                                                             length: 30
@@ -1965,7 +2135,7 @@ function Profile() {
                                             children: "✏️ Редактировать профиль"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/profile/page.tsx",
-                                            lineNumber: 652,
+                                            lineNumber: 718,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1992,7 +2162,7 @@ function Profile() {
                                             },
                                             className: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].dynamic([
                                                 [
-                                                    "4691ee0faf29474d",
+                                                    "9b9655edfa04826f",
                                                     [
                                                         Array.from({
                                                             length: 30
@@ -2010,34 +2180,34 @@ function Profile() {
                                             children: "🚪 Выйти из аккаунта"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/profile/page.tsx",
-                                            lineNumber: 676,
+                                            lineNumber: 742,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/profile/page.tsx",
-                                    lineNumber: 620,
+                                    lineNumber: 686,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/profile/page.tsx",
-                            lineNumber: 373,
+                            lineNumber: 449,
                             columnNumber: 25
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/app/profile/page.tsx",
-                        lineNumber: 169,
+                        lineNumber: 245,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/profile/page.tsx",
-                lineNumber: 135,
+                lineNumber: 211,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
-                id: "4691ee0faf29474d",
+                id: "9b9655edfa04826f",
                 dynamic: [
                     Array.from({
                         length: 30
@@ -2055,7 +2225,7 @@ function Profile() {
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/profile/page.tsx",
-        lineNumber: 103,
+        lineNumber: 179,
         columnNumber: 9
     }, this);
 }

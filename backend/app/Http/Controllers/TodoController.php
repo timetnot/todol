@@ -8,9 +8,9 @@ use Illuminate\Http\JsonResponse;
 
 class TodoController extends Controller
 {
-    public function index()
+    public function index(Request $request): JsonResponse
     {
-        $todos = Todo::orderBy('created_at', 'desc')->get();
+        $todos = $request->user()->todos()->orderBy('created_at', 'desc')->get();
         return response()->json($todos);
     }
 
@@ -22,18 +22,27 @@ class TodoController extends Controller
             'completed' => 'boolean',
         ]);
 
-        $todo = Todo::create($validated);
+        $todo = $request->user()->todos()->create($validated);
         return response()->json($todo, 201);
     }
 
-    public function show(Todo $todo): JsonResponse
+    public function show(Request $request, Todo $todo): JsonResponse
     {
+        // Проверяем, что задача принадлежит текущему пользователю
+        if ($todo->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Доступ запрещен'], 403);
+        }
+
         return response()->json($todo);
     }
 
-
     public function update(Request $request, Todo $todo): JsonResponse
     {
+        // Проверяем, что задача принадлежит текущему пользователю
+        if ($todo->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Доступ запрещен'], 403);
+        }
+
         $validated = $request->validate([
             'title' => 'sometimes|required|string|max:255',
             'description' => 'nullable|string',
@@ -44,8 +53,13 @@ class TodoController extends Controller
         return response()->json($todo);
     }
 
-    public function destroy(Todo $todo): JsonResponse
+    public function destroy(Request $request, Todo $todo): JsonResponse
     {
+        // Проверяем, что задача принадлежит текущему пользователю
+        if ($todo->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Доступ запрещен'], 403);
+        }
+
         $todo->delete();
         return response()->json(null, 204);
     }

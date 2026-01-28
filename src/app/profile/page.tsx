@@ -2,89 +2,165 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
+
+const lifeSpheres = [
+    { id: 1, title: "Отношения", icon: "💕", color: "#ec4899", subtitle: "Тепло и забота" },
+    { id: 2, title: "Семья", icon: "👨‍👩‍👧", color: "#10b981", subtitle: "Семейное счастье" },
+    { id: 3, title: "Карьера", icon: "💼", color: "#f59e0b", subtitle: "Профессиональный рост" },
+    { id: 4, title: "Финансы", icon: "💰", color: "#8b5cf6", subtitle: "Финансовая свобода" },
+    { id: 5, title: "Питание", icon: "🥗", color: "#f97316", subtitle: "Здоровое питание" },
+    { id: 6, title: "Спорт", icon: "🏋️", color: "#ef4444", subtitle: "Физическая форма" },
+    { id: 7, title: "Здоровье", icon: "🩺", color: "#3b82f6", subtitle: "Полные силы" },
+    { id: 8, title: "Отдых", icon: "😌", color: "#06b6d4", subtitle: "Восстановление сил" },
+];
 
 export default function Profile() {
-    const [user, setUser] = useState<any>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         bio: ''
     });
+    const [taskStats, setTaskStats] = useState({
+        totalTasks: 0,
+        completedTasks: 0,
+        totalSubtasks: 0,
+        completedSubtasks: 0,
+        sphereStats: {} as any
+    });
+    const [loading, setLoading] = useState(true);
     const router = useRouter();
+    const { user, logout, isAuthenticated, token } = useAuth();
 
-
-    const getTaskStats = () => {
-        const stats = {
-            totalTasks: 0,
-            completedTasks: 0,
-            totalSubtasks: 0,
-            completedSubtasks: 0,
-            sphereStats: {} as any
-        };
-
-
-        for (let i = 1; i <= 8; i++) {
-            const tasks = JSON.parse(localStorage.getItem(`tasks_sphere_${i}`) || '[]');
-            const sphereTasks = tasks.length;
-            const sphereCompleted = tasks.filter((task: any) => task.completed).length;
+    // Загружаем статистику задач из API
+    const loadTaskStats = async () => {
+        if (!token) return;
+        
+        try {
+            const response = await fetch('http://localhost:8002/api/todos', {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             
-            stats.totalTasks += sphereTasks;
-            stats.completedTasks += sphereCompleted;
-            
-
-            const subtasks = tasks.reduce((acc: number, task: any) => acc + (task.subtasks?.length || 0), 0);
-            const completedSubtasks = tasks.reduce((acc: number, task: any) => 
-                acc + (task.subtasks?.filter((st: any) => st.completed).length || 0), 0
-            );
-            
-            stats.totalSubtasks += subtasks;
-            stats.completedSubtasks += completedSubtasks;
-            
-            stats.sphereStats[i] = {
-                total: sphereTasks,
-                completed: sphereCompleted,
-                percentage: sphereTasks > 0 ? Math.round((sphereCompleted / sphereTasks) * 100) : 0
-            };
+            if (response.ok) {
+                const todos = await response.json();
+                
+                // Считаем статистику для каждой сферы
+                const stats = {
+                    totalTasks: 0,
+                    completedTasks: 0,
+                    totalSubtasks: 0,
+                    completedSubtasks: 0,
+                    sphereStats: {} as any
+                };
+                
+                // Инициализируем все сферы нулевыми значениями
+                lifeSpheres.forEach(sphere => {
+                    stats.sphereStats[sphere.id] = { total: 0, completed: 0, percentage: 0 };
+                });
+                
+                // Считаем задачи по сферам
+                todos.forEach((todo: any) => {
+                    const sphereId = todo.sphere_id || 1;
+                    if (stats.sphereStats[sphereId]) {
+                        stats.sphereStats[sphereId].total++;
+                        if (todo.completed) {
+                            stats.sphereStats[sphereId].completed++;
+                        }
+                    }
+                    
+                    stats.totalTasks++;
+                    if (todo.completed) {
+                        stats.completedTasks++;
+                    }
+                    
+                    // Считаем подзадачи (description как подзадача)
+                    if (todo.description) {
+                        stats.totalSubtasks++;
+                        if (todo.completed) {
+                            stats.completedSubtasks++;
+                        }
+                    }
+                });
+                
+                // Вычисляем проценты
+                Object.keys(stats.sphereStats).forEach(sphereId => {
+                    const sphere = stats.sphereStats[sphereId];
+                    sphere.percentage = sphere.total > 0 ? Math.round((sphere.completed / sphere.total) * 100) : 0;
+                });
+                
+                setTaskStats(stats);
+            }
+        } catch (error) {
+            console.error('Failed to load task stats:', error);
+        } finally {
+            setLoading(false);
         }
-
-        return stats;
     };
 
-    const taskStats = getTaskStats();
-
     useEffect(() => {
-        const auth = localStorage.getItem('isAuthenticated');
-        const userData = localStorage.getItem('user');
-        
-        if (auth !== 'true' || !userData) {
+        if (!isAuthenticated || !user) {
             router.push('/login');
             return;
         }
         
-        const parsedUser = JSON.parse(userData);
-        setUser(parsedUser);
         setFormData({
-            name: parsedUser.name || '',
-            email: parsedUser.email || '',
-            bio: parsedUser.bio || ''
+            name: user.name || '',
+            email: user.email || '',
+            bio: user.bio || ''
         });
-    }, [router]);
+        
+        loadTaskStats();
+    }, [isAuthenticated, user, router]);
+
+    useEffect(() => {
+        if (!isAuthenticated || !user) {
+            router.push('/login');
+            return;
+        }
+        
+        setFormData({
+            name: user.name || '',
+            email: user.email || '',
+            bio: user.bio || ''
+        });
+        
+        loadTaskStats();
+        
+        // Добавляем слушатель для обновления статистики в реальном времени
+        const handleStorageChange = () => {
+            loadTaskStats();
+        };
+        
+        window.addEventListener('storage', handleStorageChange);
+        window.addEventListener('taskUpdated', handleStorageChange);
+        
+        // Также добавляем периодическое обновление
+        const interval = setInterval(loadTaskStats, 5000);
+        
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('taskUpdated', handleStorageChange);
+            clearInterval(interval);
+        };
+    }, [isAuthenticated, user, token, router]);
 
     const handleSave = () => {
-        const updatedUser = { ...user, ...formData };
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-        setUser(updatedUser);
+        // В реальном приложении здесь был бы запрос к API для обновления профиля
+        // Пока просто обновляем локальное состояние
         setIsEditing(false);
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem('isAuthenticated');
-        localStorage.removeItem('user');
+    const handleLogout = async () => {
+        await logout();
         router.push('/login');
     };
 
-    if (!user) {
+    // Показываем загрузку, если проверяем авторизацию или загружаем статистику
+    if (!isAuthenticated || !user || loading) {
         return (
             <div style={{ 
                 minHeight: '100vh', 
@@ -535,31 +611,10 @@ export default function Profile() {
                                         gridTemplateColumns: 'repeat(2, 1fr)', 
                                         gap: '1rem'
                                     }}>
-                                        {Object.entries(taskStats.sphereStats).map(([sphereId, stats]: [string, any]) => {
-                                            const sphereNames: { [key: string]: string } = {
-                                                '1': 'Отношения',
-                                                '2': 'Семья',
-                                                '3': 'Карьера',
-                                                '4': 'Финансы',
-                                                '5': 'Питание',
-                                                '6': 'Спорт',
-                                                '7': 'Здоровье',
-                                                '8': 'Отдых'
-                                            };
-                                            
-                                            const sphereColors: { [key: string]: string } = {
-                                                '1': '#ec4899',
-                                                '2': '#f97316',
-                                                '3': '#3b82f6',
-                                                '4': '#22c55e',
-                                                '5': '#f59e0b',
-                                                '6': '#ef4444',
-                                                '7': '#a855f7',
-                                                '8': '#06b6d4'
-                                            };
-                                            
+                                        {lifeSpheres.map((sphere) => {
+                                            const stats = taskStats.sphereStats[sphere.id] || { total: 0, completed: 0, percentage: 0 };
                                             return (
-                                                <div key={sphereId} style={{
+                                                <div key={sphere.id} style={{
                                                     padding: '1rem',
                                                     background: 'rgba(255, 255, 255, 0.05)',
                                                     borderRadius: '8px',
@@ -571,17 +626,28 @@ export default function Profile() {
                                                         justifyContent: 'space-between',
                                                         marginBottom: '0.75rem' 
                                                     }}>
-                                                        <span style={{ 
-                                                            fontSize: '0.85rem', 
-                                                            color: '#e2e8f0',
-                                                            fontWeight: 500
+                                                        <div style={{ 
+                                                            display: 'flex', 
+                                                            alignItems: 'center', 
+                                                            gap: '0.5rem'
                                                         }}>
-                                                            {sphereNames[sphereId]}
-                                                        </span>
+                                                            <span style={{ 
+                                                                fontSize: '1.2rem' 
+                                                            }}>
+                                                                {sphere.icon}
+                                                            </span>
+                                                            <span style={{ 
+                                                                fontSize: '0.85rem', 
+                                                                color: '#e2e8f0',
+                                                                fontWeight: 500
+                                                            }}>
+                                                                {sphere.title}
+                                                            </span>
+                                                        </div>
                                                         <span style={{ 
                                                             fontSize: '0.8rem', 
                                                             fontWeight: 700, 
-                                                            color: sphereColors[sphereId]
+                                                            color: sphere.color
                                                         }}>
                                                             {stats.percentage}%
                                                         </span>
@@ -596,7 +662,7 @@ export default function Profile() {
                                                             style={{
                                                                 height: '100%',
                                                                 borderRadius: 'inherit',
-                                                                background: sphereColors[sphereId],
+                                                                background: sphere.color,
                                                                 width: `${stats.percentage}%`,
                                                                 transition: 'width 1s cubic-bezier(0.23, 1, 0.32, 1)'
                                                             }}

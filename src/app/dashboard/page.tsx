@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useTaskStats } from "@/hooks/useTaskStats";
+import { useAuth } from "@/hooks/useAuth";
 
 const lifeSpheres = [
     { id: 1, title: "Отношения", icon: "💕", color: "#ec4899", subtitle: "Тепло и забота" },
@@ -49,57 +49,113 @@ const generatePixels = () => {
 
 export default function Dashboard() {
     const router = useRouter();
+    const { isAuthenticated, token } = useAuth();
     const [isClient, setIsClient] = useState(false);
     const [pixels, setPixels] = useState(generatePixels());
     const [sphereStats, setSphereStats] = useState<{ [key: number]: { completedTasks: number; totalTasks: number } }>({});
 
     useEffect(() => {
+        // Проверяем авторизацию
+        if (!isAuthenticated) {
+            router.push('/login');
+            return;
+        }
+
         setIsClient(true);
         
         // Загружаем статистику для всех сфер
         const loadAllStats = async () => {
-            const stats: { [key: number]: { completedTasks: number; totalTasks: number } } = {};
-            
-            for (const sphere of lifeSpheres) {
-                try {
-                    // Используем API для получения статистики
-                    const response = await fetch(`http://127.0.0.1:8002/api/todos`);
-                    if (response.ok) {
-                        const todos = await response.json();
-                        const completedTasks = todos.filter((todo: any) => todo.completed).length;
-                        const totalTasks = todos.length;
-                        stats[sphere.id] = { completedTasks, totalTasks };
-                    } else {
-                        stats[sphere.id] = { completedTasks: 0, totalTasks: 0 };
+            try {
+                // Получаем все задачи пользователя
+                const response = await fetch(`http://localhost:8002/api/todos`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
                     }
-                } catch (error) {
-                    console.error(`Failed to load stats for sphere ${sphere.id}:`, error);
-                    stats[sphere.id] = { completedTasks: 0, totalTasks: 0 };
+                });
+                
+                if (response.ok) {
+                    const todos = await response.json();
+                    
+                    // Считаем статистику для каждой сферы
+                    const stats: { [key: number]: { completedTasks: number; totalTasks: number } } = {};
+                    
+                    // Инициализируем все сферы нулевыми значениями
+                    lifeSpheres.forEach(sphere => {
+                        stats[sphere.id] = { completedTasks: 0, totalTasks: 0 };
+                    });
+                    
+                    // Считаем задачи по сферам
+                    todos.forEach((todo: any) => {
+                        const sphereId = todo.sphere_id || 1; // По умолчанию sphere 1
+                        if (stats[sphereId]) {
+                            stats[sphereId].totalTasks++;
+                            if (todo.completed) {
+                                stats[sphereId].completedTasks++;
+                            }
+                        }
+                    });
+                    
+                    setSphereStats(stats);
+                } else {
+                    // Если запрос не удался, устанавливаем нулевые значения
+                    const stats: { [key: number]: { completedTasks: number; totalTasks: number } } = {};
+                    lifeSpheres.forEach(sphere => {
+                        stats[sphere.id] = { completedTasks: 0, totalTasks: 0 };
+                    });
+                    setSphereStats(stats);
                 }
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+                // В случае ошибки устанавливаем нулевые значения
+                const stats: { [key: number]: { completedTasks: number; totalTasks: number } } = {};
+                lifeSpheres.forEach(sphere => {
+                    stats[sphere.id] = { completedTasks: 0, totalTasks: 0 };
+                });
+                setSphereStats(stats);
             }
-            
-            setSphereStats(stats);
         };
         
         loadAllStats();
         
-        // Слушатели для обновления статистики
+        // Добавляем слушатель для обновления статистики в реальном времени
         const handleStorageChange = () => {
             loadAllStats();
         };
         
+        // Слушаем события обновления задач
         window.addEventListener('storage', handleStorageChange);
         window.addEventListener('taskUpdated', handleStorageChange);
+        
+        // Также добавляем периодическое обновление для синхронизации с API
+        const interval = setInterval(loadAllStats, 5000); // Обновляем каждые 5 секунд
         
         return () => {
             window.removeEventListener('storage', handleStorageChange);
             window.removeEventListener('taskUpdated', handleStorageChange);
+            clearInterval(interval);
         };
-    }, []);
+    }, [isAuthenticated, token, router]);
 
     const handleCardClick = (sphereId: number) => {
         router.push(`/areas/${sphereId}`);
     };
+
+    // Показываем загрузку, если проверяем авторизацию
+    if (!isAuthenticated) {
+        return (
+            <div style={{ 
+                minHeight: '100vh', 
+                background: 'linear-gradient(180deg, #0f172a 0%, #000 100%)', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                color: '#ffffff'
+            }}>
+                <div>Загрузка...</div>
+            </div>
+        );
+    }
 
     return (
         <div style={{ 
