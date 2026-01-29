@@ -38,7 +38,7 @@ export default function Profile() {
         if (!token) return;
         
         try {
-            const response = await fetch('http://localhost:8002/api/todos', {
+            const response = await fetch('http://localhost:8000/api.php/todos', {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`

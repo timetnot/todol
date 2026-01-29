@@ -1,33 +1,24 @@
-[00:00:00.389] Server  LOG     ✓ Ready in 284ms
-[00:00:20.453] Server  WARN    ⚠ Cross origin request detected from 127.0.0.1 to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+[00:00:00.675] Server  LOG     ✓ Ready in 476ms
+[00:00:40.743] Server  WARN    ⚠ Cross origin request detected from 127.0.0.1 to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
 Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
-[00:00:32.854] Browser ERROR   Auth request failed: {}
-[00:01:28.817] Browser ERROR   Failed to load task stats: {}
-[00:01:28.817] Browser ERROR   Failed to load task stats: {}
-[00:01:28.817] Browser ERROR   Failed to load task stats: {}
-[00:01:28.817] Browser ERROR   Failed to load task stats: {}
-[00:01:32.599] Browser ERROR   Failed to load stats: {}
-[00:01:32.599] Browser ERROR   Failed to load stats: {}
-[00:01:37.586] Browser ERROR   Failed to load stats: {}
-[00:01:42.592] Browser ERROR   Failed to load stats: {}
-[00:01:47.592] Browser ERROR   Failed to load stats: {}
-[00:01:52.592] Browser ERROR   Failed to load stats: {}
-[00:01:57.789] Browser ERROR   Failed to load stats: {}
-[00:02:02.881] Browser ERROR   Failed to load stats: {}
-[00:02:05.318] Browser ERROR   API Request failed: {}
-[00:02:05.318] Browser ERROR   Failed to fetch todos: {}
-[00:02:05.318] Browser ERROR   API Request failed: {}
-[00:02:05.318] Browser ERROR   Failed to fetch todos: {}
-[00:03:00.090] Browser ERROR   Failed to load task stats: {}
-[00:03:00.090] Browser ERROR   Failed to load task stats: {}
-[00:03:00.090] Browser ERROR   Failed to load task stats: {}
-[00:03:00.090] Browser ERROR   Failed to load task stats: {}
-[00:03:05.082] Browser ERROR   Failed to load task stats: {}
-[00:03:10.084] Browser ERROR   Failed to load task stats: {}
-[00:03:15.084] Browser ERROR   Failed to load task stats: {}
-[00:03:20.085] Browser ERROR   Failed to load task stats: {}
-[00:03:25.276] Browser ERROR   Failed to load task stats: {}
-[00:03:30.346] Browser ERROR   Failed to load task stats: {}
-[00:03:36.547] Browser ERROR   Failed to load task stats: {}
-[00:03:44.737] Browser ERROR   Failed to load task stats: {}
-[00:03:54.303] Browser ERROR   Failed to load task stats: {}
+[00:01:01.415] Browser ERROR   Failed to load stats: {}
+[00:01:01.415] Browser ERROR   Failed to load stats: {}
+[00:01:05.907] Browser ERROR   Failed to load stats: {}
+[00:01:05.907] Browser ERROR   Failed to load stats: {}
+[00:01:11.095] Browser ERROR   Failed to load stats: {}
+[00:01:11.095] Browser ERROR   Failed to load stats: {}
+[00:01:16.088] Browser ERROR   Failed to load stats: {}
+[00:01:21.085] Browser ERROR   Failed to load stats: {}
+[00:01:26.087] Browser ERROR   Failed to load stats: {}
+[00:01:31.089] Browser ERROR   Failed to load stats: {}
+[00:01:36.089] Browser ERROR   Failed to load stats: {}
+[00:01:41.090] Browser ERROR   Failed to load stats: {}
+[00:01:45.894] Server  LOG     ✓ Compiled in 18ms
+[00:01:46.088] Browser ERROR   Failed to load stats: {}
+[00:01:51.092] Browser ERROR   Failed to load stats: {}
+[00:01:56.094] Browser ERROR   Failed to load stats: {}
+[00:02:01.095] Browser ERROR   Failed to load stats: {}
+[00:02:02.485] Browser ERROR   API Request failed: {}
+[00:02:02.485] Browser ERROR   Failed to fetch todos: {}
+[00:02:02.525] Browser ERROR   API Request failed: {}
+[00:02:02.525] Browser ERROR   Failed to fetch todos: {}

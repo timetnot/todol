@@ -8,7 +8,7 @@ __turbopack_context__.s([
     "localStorageService",
     ()=>localStorageService
 ]);
-const API_BASE_URL = 'http://localhost:8002/api';
+const API_BASE_URL = 'http://localhost:8001/api';
 class ApiService {
     getAuthToken() {
         if ("TURBOPACK compile-time truthy", 1) return null;

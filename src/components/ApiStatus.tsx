@@ -9,8 +9,12 @@ export function ApiStatus() {
     useEffect(() => {
         const checkApiStatus = async () => {
             try {
-                const response = await fetch('http://localhost:8001/api/todos');
-                if (response.ok) {
+                const response = await fetch('http://localhost:8000/api.php/todos');
+                
+                if (response.status === 401) {
+                    // 401 - это нормально для todos endpoint без токена, значит API работает
+                    setStatus('online');
+                } else if (response.ok) {
                     setStatus('online');
                 } else {
                     setStatus('offline');

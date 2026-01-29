@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import ClientLayout from "../components/ClientLayout";
+import "./globals.css";
 import "../styles/home.css";
 import "../styles/layout.css";
 import "../styles/areas.css";

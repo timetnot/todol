@@ -30,7 +30,7 @@ __turbopack_context__.s([
     "authService",
     ()=>authService
 ]);
-const API_BASE_URL = 'http://localhost:8002/api';
+const API_BASE_URL = 'http://localhost:8000/api.php';
 class AuthService {
     token = null;
     constructor(){

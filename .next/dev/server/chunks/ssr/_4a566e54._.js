@@ -19,8 +19,11 @@ function ApiStatus() {
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
         const checkApiStatus = async ()=>{
             try {
-                const response = await fetch('http://localhost:8001/api/todos');
-                if (response.ok) {
+                const response = await fetch('http://localhost:8000/api.php/todos');
+                if (response.status === 401) {
+                    // 401 - это нормально для todos endpoint без токена, значит API работает
+                    setStatus('online');
+                } else if (response.ok) {
                     setStatus('online');
                 } else {
                     setStatus('offline');
@@ -91,7 +94,7 @@ function ApiStatus() {
                         className: "jsx-c94f5ec894fe95ac"
                     }, void 0, false, {
                         fileName: "[project]/src/components/ApiStatus.tsx",
-                        lineNumber: 67,
+                        lineNumber: 71,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -102,7 +105,7 @@ function ApiStatus() {
                                 children: getStatusText()
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ApiStatus.tsx",
-                                lineNumber: 75,
+                                lineNumber: 79,
                                 columnNumber: 21
                             }, this),
                             lastCheck && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -114,19 +117,19 @@ function ApiStatus() {
                                 children: lastCheck
                             }, void 0, false, {
                                 fileName: "[project]/src/components/ApiStatus.tsx",
-                                lineNumber: 77,
+                                lineNumber: 81,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/ApiStatus.tsx",
-                        lineNumber: 74,
+                        lineNumber: 78,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/ApiStatus.tsx",
-                lineNumber: 50,
+                lineNumber: 54,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
